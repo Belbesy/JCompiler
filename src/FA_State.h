@@ -41,7 +41,7 @@ public:
 	void AddTransition(string input, FA_State* state);
 	void removeTransition(FA_State* state);
 	void getTransition(string input, vector<FA_State*> &states);
-	FA_State& operator=(const FA_State& other);
+	void operator=(const FA_State& other);
 	bool operator==(const FA_State& other);
 
 };
