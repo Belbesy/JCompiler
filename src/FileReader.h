@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include <fstream>
 #include <iostream>
+#include <map>
 using namespace std;
 class FileReader {
 
@@ -24,7 +25,7 @@ public:
 	vector<string> fileRead;
 	/** vector contains all the regular
 	 */
-	vector<StringPair> defs;
+	multimap<string,string> defs;
 	/**vector contains all the regular expression in the file to be used later */
 	vector<StringPair> regularExpressions;
 

@@ -116,7 +116,8 @@ bool FileReader::initializeForNFA() {
 				regularExpressions.push_back(makeKeyPair(keyWord));
 			}
 		} else if (isDefinition(curr)) {
-			defs.push_back(makeDefinitonPair(curr));
+			StringPair pair = makeDefinitonPair(curr);
+			defs.insert(make_pair(pair.id,pair.definition));
 
 		} else {
 			//error
