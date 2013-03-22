@@ -112,7 +112,7 @@ bool FileReader::initializeForNFA() {
 			curr.replace(pos, 1, "");
 			vector<string> keywords = StringOperations::split(curr);
 			for (int j = 0; j < keywords.size(); ++j) {
-				string keyWord = keywords[j];
+				string keyWord = "{"+keywords[j]+"}";
 				regularExpressions.push_back(makeKeyPair(keyWord));
 			}
 		} else if (isDefinition(curr)) {
