@@ -17,12 +17,12 @@ FA_State::FA_State() {
 FA_State::FA_State(int s_id) {
 	id = s_id;
 	acceptingState = false;
+
 }
 
 FA_State::FA_State(set<FA_State*> state, int s_id) {
 	id = s_id;
 	transitions_from = state;
-	acceptingState = false;
 }
 
 FA_State::~FA_State() {
@@ -67,7 +67,7 @@ void FA_State::getTransition(string input, vector<FA_State*> &states) {
 	}
 }
 //! Override the assignment operator
-void FA_State::operator=(const FA_State& other) {
+FA_State& FA_State::operator=(const FA_State& other) {
 	transitions_to = other.transitions_to;
 	id = other.id;
 	transitions_from = other.transitions_from;
@@ -80,4 +80,13 @@ bool FA_State::operator==(const FA_State& other) {
 	else
 		return (transitions_from == other.transitions_from);
 }
+void FA_State::toString(){
+	multimap<string, FA_State*>::iterator it;
+		for (it = transitions_to.begin(); it != transitions_to.end();) {
+			string str = it->first;
+			FA_State* state = it->second;
+			cout <<"From state "<<id<<"  "+str<<" To state" << state->id<<endl;
+			it++;
+		}
 
+}

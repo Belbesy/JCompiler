@@ -1,0 +1,24 @@
+To run the NFA
+1) create File Reader object ( this object handle the step of reading file and divide the input into definitions and expressions )
+FileReader *f = new FileReader();
+2)Read the file
+	f->readTheFile("test");
+3) initialize
+f->initializeForNFA();
+4) Create the NFA and initialize its regular expressions and definitions
+NFA *n = new NFA(f->regularExpressions);
+	n->defs = f->defs;
+5) create the NFA for the file
+n->createAll();
+-------------------------------------------
+Note the prints it will help to trace the NFA created .. the last print contains all the NFA created
+
+
+
+
+----------------------------
+About the input file
+for writing the expression here is the format
+expressionName: expressionDefinition
+for the expressionDefinition DO NOT LEAVE any SPACE ,   LEAVE SPACE for CONCATENATION only
+

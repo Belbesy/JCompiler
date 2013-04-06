@@ -12,6 +12,7 @@
 #include <set>
 #include <algorithm>
 #include <list>
+#include <iostream>
 using namespace std;
 #ifndef FA_STATE_H
 #define	FA_STATE_H
@@ -41,8 +42,9 @@ public:
 	void AddTransition(string input, FA_State* state);
 	void removeTransition(FA_State* state);
 	void getTransition(string input, vector<FA_State*> &states);
-	void operator=(const FA_State& other);
+	FA_State& operator=(const FA_State& other);
 	bool operator==(const FA_State& other);
+	void toString();
 
 };
 

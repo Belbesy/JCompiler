@@ -25,7 +25,7 @@ public:
 	vector<string> fileRead;
 	/** vector contains all the regular
 	 */
-	multimap<string,string> defs;
+	vector<StringPair> defs;
 	/**vector contains all the regular expression in the file to be used later */
 	vector<StringPair> regularExpressions;
 
@@ -35,9 +35,11 @@ public:
 	bool isExpression(string exp);
 	bool isDefinition(string exp);
 	bool isKeyWord(string exp);
+	bool isPunc(string exp);
 	StringPair makeExpressionPair(string exp);
 	StringPair makeDefinitonPair(string def);
 	StringPair makeKeyPair(string key);
+	StringPair makePuncPair(string punc);
 
 	virtual ~FileReader();
 };

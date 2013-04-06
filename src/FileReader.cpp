@@ -66,11 +66,19 @@ bool FileReader::isKeyWord(string exp) {
 	}
 	return false;
 }
+bool FileReader::isPunc(string exp) {
+
+	if (exp[0] == '[') {
+		return true;
+	}
+	return false;
+}
 StringPair FileReader::makeDefinitonPair(string def) {
 	int pos = def.find("=");
-	string id = def.substr(0, pos);
-	string defin = def.substr(pos + 1);
+	string id = def.substr(0, pos - 1);
+	string defin = def.substr(pos + 2);
 	StringPair pair;
+
 	pair.id = id;
 	pair.definition = defin;
 	return pair;
@@ -78,7 +86,7 @@ StringPair FileReader::makeDefinitonPair(string def) {
 StringPair FileReader::makeExpressionPair(string exp) {
 	int pos = exp.find(": ");
 	string id = exp.substr(0, pos);
-	string defin = exp.substr(pos + 1);
+	string defin = exp.substr(pos + 2);
 	StringPair pair;
 	pair.id = id;
 	pair.definition = defin;
@@ -86,7 +94,19 @@ StringPair FileReader::makeExpressionPair(string exp) {
 }
 StringPair FileReader::makeKeyPair(string key) {
 	StringPair pair;
-	string id = "{KEYWORD}";
+	string id = key;
+	string defi = "";
+	for (int var = 0; var < key.size(); ++var) {
+		defi = defi+key[var] + " ";
+	}
+	defi = defi.substr(0, defi.size() - 1);
+	pair.id = defi;
+	pair.definition = defi;
+	return pair;
+}
+StringPair FileReader::makePuncPair(string key) {
+	StringPair pair;
+	string id = "[Punctuation]";
 	string defi = key;
 	pair.id = id;
 	pair.definition = defi;
@@ -112,16 +132,29 @@ bool FileReader::initializeForNFA() {
 			curr.replace(pos, 1, "");
 			vector<string> keywords = StringOperations::split(curr);
 			for (int j = 0; j < keywords.size(); ++j) {
-				string keyWord = "{"+keywords[j]+"}";
+				string keyWord = keywords[j];
 				regularExpressions.push_back(makeKeyPair(keyWord));
 			}
-		} else if (isDefinition(curr)) {
-			StringPair pair = makeDefinitonPair(curr);
-			defs.insert(make_pair(pair.id,pair.definition));
+		} else if (isPunc(curr)) {
+			int pos = curr.find("[");
+			curr.replace(pos, 1, "");
+			pos = curr.find("]");
+			curr.replace(pos, 1, "");
+			vector<string> punct = StringOperations::split(curr);
+			for (int j = 0; j < punct.size(); ++j) {
+				string punctu = punct[j];
+				regularExpressions.push_back(makePuncPair(punctu));
+			}
+		}
 
+		else if (isDefinition(curr)) {
+			StringPair pair = makeDefinitonPair(curr);
+
+			defs.push_back(pair);
 		} else {
 			//error
 		}
 	}
 	return true;
 }
+

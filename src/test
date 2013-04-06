@@ -1,0 +1,9 @@
+{boolean if}
+id: letter (letter|digit)*
+letters: letter*
+letter = a-z|A-Z
+digit = 0-9
+digits = digit+
+addop: \\+|-
+mulop: \\*|/
+[; , \\( \\) { }]
