@@ -10,14 +10,10 @@
 #include <iostream>
 
 FileReader::FileReader() {
-	// TODO Auto-generated constructor stub
-	expressionsID.push_back("keyword");
-		expressionsID.push_back("punctuation");
 
 }
 
 FileReader::~FileReader() {
-	// TODO Auto-generated destructor stub
 }
 /**
  * read the file and put it in the vector fileRead
@@ -38,7 +34,6 @@ void FileReader::readTheFile(char fileName[]) {
 
 	else
 		cout << "Unable to open file";
-
 
 }
 /**check if it's regular definition
@@ -93,7 +88,6 @@ StringPair FileReader::makeExpressionPair(string exp) {
 	StringPair pair;
 	pair.id = id;
 	pair.definition = defin;
-	expressionsID.push_back(id);
 	return pair;
 }
 StringPair FileReader::makeKeyPair(string key) {
@@ -101,16 +95,16 @@ StringPair FileReader::makeKeyPair(string key) {
 	string id = key;
 	string defi = "";
 	for (int var = 0; var < key.size(); ++var) {
-		defi = defi + key[var] + " ";
+		defi = defi+key[var] + " ";
 	}
 	defi = defi.substr(0, defi.size() - 1);
-	pair.id = "keyword";
+	pair.id = defi;
 	pair.definition = defi;
 	return pair;
 }
 StringPair FileReader::makePuncPair(string key) {
 	StringPair pair;
-	string id = "punctuation";
+	string id = "[Punctuation]";
 	string defi = key;
 	pair.id = id;
 	pair.definition = defi;
@@ -137,10 +131,7 @@ bool FileReader::initializeForNFA() {
 			vector<string> keywords = StringOperations::split(curr);
 			for (int j = 0; j < keywords.size(); ++j) {
 				string keyWord = keywords[j];
-				StringPair kw = makeKeyPair(keyWord);
-
-				regularExpressions.push_back(kw);
-
+				regularExpressions.push_back(makeKeyPair(keyWord)); // TODO
 			}
 		} else if (isPunc(curr)) {
 			int pos = curr.find("[");

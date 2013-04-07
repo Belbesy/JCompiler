@@ -12,21 +12,14 @@
 #include <string>
 
 class NFA {
-private:
-	bool isDef;
 public:
-	std::set<char> input;
+	StringPair regex;
 	vector<StringPair> defs;
-	map<string, FSA_TABLE> defsNFA;
+	map<string,FSA_TABLE> defsNFA;
 	/*regular expressions*/
 	vector<StringPair> expressions;
 	/*NFAs for regular expressions*/
 	vector<FSA_TABLE> NFAs;
-	/**vector for all matched expression**/
-	vector<string> matchedExps;
-
-
-	int currID;
 	NFA();
 	NFA(StringPair reg_expression);
 	NFA(vector<StringPair> expressions);
@@ -39,7 +32,7 @@ public:
 	//stack for operators
 	stack<char> OperatorStack;
 	//state id
-	int state_id;
+	int state_id ;
 
 	/*METHODS*/
 
@@ -54,14 +47,12 @@ public:
 	bool IsInput(char c);
 	bool IsLeftParanthesis(char c);
 	bool IsRightParanthesis(char c);
-	void push_NFA(char s);
 	void push_NFA(string s);
 	bool evaluate();
 	bool pop(FSA_TABLE& NFATable);
 	void createAll();
 	void createNFADefs();
 	bool isReservedSymbol(char c);
-	string getExpression(string s);
 };
 
 #endif /* NFA_H_ */
