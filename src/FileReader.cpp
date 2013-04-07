@@ -10,12 +10,10 @@
 #include <iostream>
 
 FileReader::FileReader() {
-	// TODO Auto-generated constructor stub
 
 }
 
 FileReader::~FileReader() {
-	// TODO Auto-generated destructor stub
 }
 /**
  * read the file and put it in the vector fileRead
@@ -133,7 +131,7 @@ bool FileReader::initializeForNFA() {
 			vector<string> keywords = StringOperations::split(curr);
 			for (int j = 0; j < keywords.size(); ++j) {
 				string keyWord = keywords[j];
-				regularExpressions.push_back(makeKeyPair(keyWord));
+				regularExpressions.push_back(makeKeyPair(keyWord)); // TODO
 			}
 		} else if (isPunc(curr)) {
 			int pos = curr.find("[");

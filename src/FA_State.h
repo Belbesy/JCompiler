@@ -31,6 +31,8 @@ public:
 	multimap<string, FA_State*> transitions_to;
 	/**if this state is accepting state or not*/
 	bool acceptingState;
+	int matchedPattern; /** the name of the pattern if it was final state */ // TODO
+
 	/**Transitions from others to this state*/
 	set<FA_State*> transitions_from;
 	/*--------------------------------------Constructors-----------------------------------------*/
@@ -42,7 +44,7 @@ public:
 	void AddTransition(string input, FA_State* state);
 	void removeTransition(FA_State* state);
 	void getTransition(string input, vector<FA_State*> &states);
-	FA_State& operator=(const FA_State& other);
+	void operator=(const FA_State& other);
 	bool operator==(const FA_State& other);
 	void toString();
 

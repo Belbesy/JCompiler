@@ -10,7 +10,7 @@
 #include "StringPair.h"
 #include <map>
 #include <string>
-#include "NFACreator.h"
+
 class NFA {
 public:
 	StringPair regex;
