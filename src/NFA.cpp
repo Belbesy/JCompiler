@@ -10,14 +10,15 @@
 #include <string>
 NFA::NFA() {
 	state_id = 0;
+	currID=-1;
+
 }
-NFA::NFA(StringPair expression) {
-	regex = expression;
-	state_id = 0;
-}
+
 NFA::NFA(vector<StringPair> expr) {
 	expressions = expr;
 	state_id = 0;
+	currID=-1;
+
 
 }
 /*create all definitions*/
@@ -32,10 +33,22 @@ void NFA::createNFADefs() {
  * createAll : create all definitions and regular expressions
  * */
 void NFA::createAll() {
+	isDef=true;
 	createNFADefs();
 	//create NFA
+	isDef=false;
 	for (int var = 0; var < expressions.size(); ++var) {
+		string matched=expressions[var].id;
+		for (int i = 0; i < matchedExps.size(); ++i) {
+			string currExp = matchedExps[i];
+
+			if (matchedExps[i] == expressions[var].id) {
+				currID = i;
+				break;
+			}
+		}
 		create_NFA(expressions[var].definition);
+
 		NFAs.push_back(NFATable);
 	}
 	for (int var = 0; var < NFAs.size(); ++var) {
@@ -48,7 +61,7 @@ void NFA::createAll() {
 	cout << "------------------------------" << endl;
 	cout << "Front State " << NFATable.front()->id << " End State "
 			<< NFATable.back()->id << endl;
-	NFATable[NFATable.size() - 1]->acceptingState = true;
+
 	for (int var = 0; var < NFATable.size(); ++var) {
 		NFATable[var]->toString();
 	}
@@ -88,7 +101,18 @@ void NFA::create_NFA(string def) {
 					temp = "";
 				} else {
 					/*make NFA for it then push into operand stack*/
-					push_NFA(temp);
+					if (temp.size() != 1) {
+						if (temp[1] == '-') {
+							push_NFA(temp);
+						} else {
+							//error
+						}
+					} else {
+						push_NFA(temp[0]);
+						//push to input set
+						input.insert(temp[0]);
+					}
+
 					temp = "";
 				}
 			}
@@ -125,8 +149,17 @@ void NFA::create_NFA(string def) {
 			OperandStack.push(defin);
 			temp = "";
 		} else {
-			push_NFA(temp);
-			temp = "";
+			if (temp.size() != 1) {
+				if (temp[1] == '-') {
+					push_NFA(temp);
+				} else {
+					//error
+				}
+			} else {
+				push_NFA(temp[0]);
+				//push to input set
+				input.insert(temp[0]);
+			}
 		}
 	}
 	while (!OperatorStack.empty()) {
@@ -134,19 +167,90 @@ void NFA::create_NFA(string def) {
 
 	}
 	pop(NFATable);
+	if(!isDef){
+		cout<<"Accepted with id "<<currID<<endl;
+		NFATable[NFATable.size()-1]->matchedPattern=currID;
+		NFATable[NFATable.size()-1]->acceptingState=true;
+	}
 }
 /*push_NFA:
  * make NFA for this string then push into operand stack*/
-void NFA::push_NFA(string s) {
-	//change to
+void NFA::push_NFA(char s) {
+//change to
 	FA_State *state0 = new FA_State(state_id++);
 	FA_State *state1 = new FA_State(state_id++);
+
 	state0->AddTransition(s, state1);
+	state0->matchedPattern = currID;
+	state1->matchedPattern = currID;
 	FSA_TABLE NFATable;
 	NFATable.push_back(state0);
 	NFATable.push_back(state1);
 	OperandStack.push(NFATable);
 
+}
+void NFA::push_NFA(string s) {
+	FA_State *startState = new FA_State(state_id++);
+	FA_State *endState = new FA_State(state_id++);
+	startState->matchedPattern = currID;
+	endState->matchedPattern = currID;
+	FSA_TABLE NFATable;
+	NFATable.push_back(startState);
+	for (int i = s[0]; i <= s[2]; i++) {
+		FA_State* temp = new FA_State(state_id++);
+		temp->matchedPattern = currID;
+		startState->AddTransition(i, temp);
+		temp->AddTransition(char(8), endState);
+		input.insert(i);
+		NFATable.push_back(temp);
+	}
+	if(!isDef){
+
+
+//	endState->acceptingState = true;
+	}
+	NFATable.push_back(endState);
+	OperandStack.push(NFATable);
+//	for (int i = 0; i < strRegEx.size(); ++i) {
+//		// get the character
+//		char c = strRegEx[i];
+//
+//		if (IsInput(c))
+//			push_NFA(c);
+//		else if (OperatorStack.empty())
+//			OperatorStack.push(c);
+//		else if (IsLeftParanthesis(c))
+//			OperatorStack.push(c);
+//		else if (IsRightParanthesis(c)) {
+//			// Evaluate everything in parenthesis
+//			while (!IsLeftParanthesis(OperatorStack.top()))
+//				if (!evaluate())
+//					return;
+//			// Remove left parenthesis after the evaluation
+//			OperatorStack.pop();
+//		} else {
+//			while (!OperatorStack.empty() && Presedence(c, OperatorStack.top()))
+//				if (!evaluate())
+//					return;
+//			OperatorStack.push(c);
+//		}
+//	}
+//
+//	// Evaluate the rest of operators
+//	while (!OperatorStack.empty())
+//		if (!evaluate())
+//			return;
+//
+//	// Pop the result from the stack
+//	if (!pop(NFATable))
+//		return;
+//	cout << "------------------------------" << endl;
+//		cout << "Front State " << NFATable.front()->id << " End State "
+//				<< NFATable.back()->id << endl;
+//		NFATable[NFATable.size() - 1]->acceptingState = true;
+//		for (int var = 0; var < NFATable.size(); ++var) {
+//			NFATable[var]->toString();
+//		}
 }
 /*evaluate :
  * check what is the operator then call proper method
@@ -222,18 +326,20 @@ bool NFA::Star() {
 	/*initialize start and end state*/
 	FA_State* stateStart = new FA_State(state_id++);
 	FA_State* endState = new FA_State(state_id++);
+	stateStart->matchedPattern = currID;
+	endState->matchedPattern = currID;
 
-	//make epsilon transition from start state to end state
-	stateStart->AddTransition("\\L", endState);
+//make epsilon transition from start state to end state
+	stateStart->AddTransition(char(8), endState);
 
-	//add epsilon transition from start state to the first state of the operand
-	stateStart->AddTransition("\\L", table1[0]);
+//add epsilon transition from start state to the first state of the operand
+	stateStart->AddTransition(char(8), table1[0]);
 
-	//add epsilon transition from end state of the operand to the end state
-	table1[table1.size() - 1]->AddTransition("\\L", endState);
+//add epsilon transition from end state of the operand to the end state
+	table1[table1.size() - 1]->AddTransition(char(8), endState);
 
-	//add epsilon transition from end state of the operand to start state of the operand
-	table1[table1.size() - 1]->AddTransition("\\L", table1[0]);
+//add epsilon transition from end state of the operand to start state of the operand
+	table1[table1.size() - 1]->AddTransition(char(8), table1[0]);
 
 	/*add start and end state*/
 	table1.push_back(endState);
@@ -256,7 +362,7 @@ bool NFA::concat() {
 		return false;
 	}
 	/*add transition from A to B*/
-	A[A.size() - 1]->AddTransition("\\L", B[0]);
+	A[A.size() - 1]->AddTransition(char(8), B[0]);
 	A.insert(A.end(), B.begin(), B.end());
 	/*push back NFA to the operand stack*/
 	OperandStack.push(A);
@@ -299,16 +405,17 @@ bool NFA::Union() {
 	/*initialize start and end state*/
 	FA_State *startState = new FA_State(state_id++);
 	FA_State *endState = new FA_State(state_id++);
-
+	startState->matchedPattern = currID;
+	endState->matchedPattern = currID;
 	/*add transition from start state to first state of one of the operands*/
-	startState->AddTransition("\\L", A[0]);
+	startState->AddTransition(char(8), A[0]);
 
 	/*add transition from start state to the other operand */
-	startState->AddTransition("\\L", B[0]);
+	startState->AddTransition(char(8), B[0]);
 
 	/*add transition from the last state of both operands to the end state*/
-	A[A.size() - 1]->AddTransition("\\L", endState);
-	B[B.size() - 1]->AddTransition("\\L", endState);
+	A[A.size() - 1]->AddTransition(char(8), endState);
+	B[B.size() - 1]->AddTransition(char(8), endState);
 
 	/*push end state in the operand B*/
 	B.push_back(endState);
@@ -347,6 +454,6 @@ bool NFA::IsRightParanthesis(char ch) {
 	return (ch == 41);
 }
 NFA::~NFA() {
-	// TODO Auto-generated destructor stub
+// TODO Auto-generated destructor stub
 }
 

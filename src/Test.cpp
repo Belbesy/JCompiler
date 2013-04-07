@@ -10,47 +10,37 @@
 #include "FileReader.h"
 #include <vector>
 #include "NFA.h"
-#include "Simulator.h"
 #include <map>
 using namespace std;
 
-void test_simulator()
-{
-	vector<FA_State*> DFA;
-	vector<string> patterns;
-	patterns.push_back("ERROR");
-	patterns.push_back("id");
-	patterns.push_back("ERROR");
-	FA_State* state0 = new FA_State(0);
-	FA_State* state1 = new FA_State(1);
-	state1->acceptingState = true;
-	state1->matchedPattern = 1;
-	state0->AddTransition("a", state1);
-	DFA.push_back(state0);
-	DFA.push_back(state1);
-	Simulator* sim = new Simulator(DFA, patterns);
-	sim->open_file("sim_test");
-	string lex;
-	cout << "Start tokens" << endl;
-	lex = sim->next_token();
-	while (!lex.empty())
-	{
-		cout << lex << endl;
-		lex = sim->next_token();
-	}
-	cout << "End of tokens" << endl;
-}
-
-int main()
-{
+int main() {
 	FileReader *f = new FileReader();
-
-	f->readTheFile("test1");
+	vector<string> myv;
+	myv.push_back("{boolean if}");
+	myv.push_back("id: letter (letter|digit)*");
+	myv.push_back("letters: letter*");
+	myv.push_back("letter = a-z|A-Z");
+	myv.push_back("digit = 0-9");
+	myv.push_back("digits = digit+");
+	myv.push_back("addop: \\+|-");
+	myv.push_back("mulop: \\*|/");
+	myv.push_back("[; , \\( \\) { }]");
+	f->fileRead = myv;
 	f->initializeForNFA();
 
 	NFA *n = new NFA(f->regularExpressions);
 	n->defs = f->defs;
+	n->matchedExps =f->expressionsID;
 	n->createAll();
-//	test_simulator();
+	std::set<char> myset = n->input;
+	std::set<char>::iterator it;
+
+	std::cout << "myset contains:";
+	for (it = myset.begin(); it != myset.end(); ++it)
+		std::cout << ' ' << *it;
+	std::cout << '\n';
+
+//	cout << n->getExpression("0-a");
+//	n->push_NFA("a-z");
 	return 0;
 }
