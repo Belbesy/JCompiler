@@ -19,6 +19,20 @@ DFA_Builder::DFA_Builder(FSA_TABLE NFATable_,vector<string> patterns_ ,vector<ch
 	state_id = 0;
 }
 
+/**
+ * in this method DFA logic was separated from subset construction,
+ * this means DFA states were expressed using FA_State class , and were stored in DFA vector
+ *
+ * and sub-states of each state ware added in a separate vector called "DFA_states" , this vector
+ * keeps only the id if state not the state itself
+ *
+ * lazy addition of sub-states was used to avoid duplicates, so visited array was used,
+ * first mark sub-states you want add to you state then a flush of this sub-states in done
+ *  in a separate step (flush_new_state) when we are done with sub-states addition
+ *
+ *sub-set construction was implemented using BFS ,each new state we added to the table is added
+ *sub-set to the queue to explore it later
+ */
 void DFA_Builder::NFA_to_DFA()
 {
 	for(int i = 0;  i < statesNum;i++)
@@ -39,7 +53,7 @@ void DFA_Builder::NFA_to_DFA()
 		front = q.front();
 		q.pop();
 		stateSize = (int)DFA_states[front].size();
-		size = all_inputs.size(); // TODO get this array some how
+		size = all_inputs.size(); // TODO get this array somehow
 		for(int i = 0; i < size;i++)
 		{
 			char input = all_inputs[i];
