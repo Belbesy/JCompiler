@@ -14,7 +14,7 @@
 #define SIMULATOR_H_
 
 
-namespace std {
+using namespace std;
 
 class Simulator {
 public:
@@ -29,5 +29,4 @@ private:
 	vector<string> patterns; // keywords first then patterns in the order they were declared
 };
 
-} /* namespace std */
 #endif /* SIMULATOR_H_ */

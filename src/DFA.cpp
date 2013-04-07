@@ -7,7 +7,6 @@
 
 #include "DFA.h"
 
-namespace std {
 
 DFA_Builder::DFA_Builder(FSA_TABLE NFATable_,vector<string> patterns_ ,vector<char> all_inputs_)
 {
@@ -191,4 +190,3 @@ DFA_Builder::~DFA_Builder()
 
 
 
-} /* namespace std */
