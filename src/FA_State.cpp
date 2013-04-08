@@ -65,11 +65,11 @@ void FA_State::removeTransition(FA_State *state) {
 void FA_State::getTransition(char input, vector<FA_State*> &states) {
 	// Iterate through all values with the key chInput
 	multimap<char, FA_State*>::iterator iter;
-//	for (iter = transitions_to(input);
-//			iter != transitions_to(input); ++iter) {
-//		FA_State *pState = iter->second;
-//		states.push_back(pState);
-//	}
+	for (iter = transitions_to.lower_bound(input);
+			iter != transitions_to.upper_bound(input); ++iter) {
+		FA_State *pState = iter->second;
+		states.push_back(pState);
+	}
 }
 //! Override the assignment operator
 void FA_State::operator=(const FA_State& other) {

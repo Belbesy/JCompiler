@@ -46,42 +46,42 @@ void test_simulator()
 void test_conc()
 {
 	vector<string> patterns;
-	patterns.push_back("SASA");
 	patterns.push_back("SA");
+	patterns.push_back("SASA");
 	ConcatenationHandler handler(patterns, "+");
-	cout << handler.handle("SASATFSGTSASASA") << endl;
+	cout << handler.handle("\\)\\(SASAT\\*FS-GT\\((SA|T)X|(SA|66)X\\)*TY") << endl;
 }
 
 int main()
 {
-	FileReader *f = new FileReader();
-
-	f->readTheFile("test1");
-	f->initializeForNFA();
-
-	NFA *n = new NFA(f->regularExpressions);
-	n->defs = f->defs;
-	n->createAll();
-	vector<char> all_inputs;
-//	n->input ==> all_inputs 			TODO make this conversion from set to vector
-	DFA_Builder* DFA = new DFA_Builder(n->NFATable , n->matchedExps , all_inputs);
-	DFA->NFA_to_DFA();
-	DFA->minimize_DFA();
-	Simulator* sim =  new Simulator(DFA->DFA , DFA->patterns);
-	sim->open_file("src_file");
-
-	// TODO change this according to simulator changes
-	string lex;
-	cout << "Start tokens" << endl;
-	lex = sim->next_token();
-	while (!lex.empty())
-	{
-		cout << lex << endl;
-		lex = sim->next_token();
-	}
-	cout << "End of tokens" << endl;
+//	FileReader *f = new FileReader();
+//
+//	f->readTheFile("test1");
+//	f->initializeForNFA();
+//
+//	NFA *n = new NFA(f->regularExpressions);
+//	n->defs = f->defs;
+//	n->createAll();
+//	vector<char> all_inputs;
+////	n->input ==> all_inputs 			TODO make this conversion from set to vector
+//	DFA_Builder* DFA = new DFA_Builder(n->NFATable , n->matchedExps , all_inputs);
+//	DFA->NFA_to_DFA();
+//	DFA->minimize_DFA();
+//	Simulator* sim =  new Simulator(DFA->DFA , DFA->patterns);
+//	sim->open_file("src_file");
+//
+//	// TODO change this according to simulator changes
+//	string lex;
+//	cout << "Start tokens" << endl;
+//	lex = sim->next_token();
+//	while (!lex.empty())
+//	{
+//		cout << lex << endl;
+//		lex = sim->next_token();
+//	}
+//	cout << "End of tokens" << endl;
 
 //	test_simulator();
-//	test_conc();
+	test_conc();
 	return 0;
 }

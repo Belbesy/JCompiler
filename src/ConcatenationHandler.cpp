@@ -8,15 +8,22 @@
 #include "ConcatenationHandler.h"
 
 
+const string esp_patterns[6] = {"\\-" , "\\|" , "\\+" , "\\*" , "\\(","\\)"};
+
 ConcatenationHandler::ConcatenationHandler(vector<string> patterns ,string separator_)
 {
 	separator = separator_;
-	pattersnNum = (int) patterns.size();
-	for (int i = 0; i < pattersnNum; i++)
+	patternsNum = (int) patterns.size();
+	for (int i = 0; i < patternsNum; i++)
 	{
 		build(patterns[i]);
 	}
-	matched_len = new int[pattersnNum];
+	// just handle operators special case
+	for(int k  =0 ; k < 6;k++)
+		build(esp_patterns[k]);
+	patternsNum += 6;
+
+	matched_len = new int[patternsNum];
 }
 
 
@@ -49,6 +56,13 @@ void ConcatenationHandler::reset_all()
 	for (int i = 0; i < (int) F.size(); i++)
 		matched_len[i] = 0;
 }
+
+bool ConcatenationHandler::isOperator(const char ch)
+{
+	return ch== '-' || ch == '|' || ch == '+' ||ch =='*' ||ch == '(' || ch == ')';
+}
+
+
 string ConcatenationHandler::handle(string lexeme)
 {
 	int len = lexeme.length();
@@ -57,7 +71,7 @@ string ConcatenationHandler::handle(string lexeme)
 	for(int i = 0; i < len;i++)
 	{
 		matches[i] = 1;
-		for(int j = 0; j < pattersnNum;j++)
+		for(int j = 0; j < patternsNum;j++)
 		{
 			matched_len[j] = getL(lexeme[i], matched_len[j] , j);
 			if (matched_len[j] == length[j]) // match
@@ -74,8 +88,20 @@ string ConcatenationHandler::handle(string lexeme)
 	while(i < len)
 	{
 		token_len = matches[i];
-		if(!result.empty())
-			result += separator;
+		if (token_len == 1 && i + 1 < len && lexeme[i + 1] == '-')
+			token_len = 3;
+		if (!result.empty())
+		{
+			if(token_len > 1  || (lexeme[i] != '|' && lexeme[i] != '+' && lexeme[i] != '*' && lexeme[i] != ')'))
+			{
+				char last = result[result.length()-1];
+				char prev = 0;
+				if(result.length() > 1)
+					prev = result[result.length()-2];
+				if(prev == '\\' || (last != '|' && last != '('))
+					result += separator;
+			}
+		}
 		result += lexeme.substr(i , token_len);
 		i+= token_len;
 	}
