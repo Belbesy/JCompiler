@@ -12,10 +12,9 @@
 FileReader::FileReader() {
 	// TODO Auto-generated constructor stub
 	expressionsID.push_back("keyword");
-		expressionsID.push_back("punctuation");
+	expressionsID.push_back("punctuation");
 
 }
-
 
 FileReader::~FileReader() {
 	// TODO Auto-generated destructor stub
@@ -40,7 +39,6 @@ void FileReader::readTheFile(char fileName[]) {
 
 	else
 		cout << "Unable to open file";
-
 
 }
 /**check if it's regular definition
@@ -87,16 +85,17 @@ StringPair FileReader::makeDefinitonPair(string def) {
 	pair.id = id;
 	pair.definition = defin;
 	for (int var = 0; var < defs.size(); ++var) {
-			StringPair currSP = defs[var];
-			if(currSP.id==id){
+		StringPair currSP = defs[var];
+		if (currSP.id == id) {
 
-				cout<<"Error : this definition "<<def<<" is already defined before";
-				//return error with making id=-1 in order not to push it on the regularExpressions vector
-				StringPair errorPair;
-				errorPair.id="-1";
-				return errorPair;
-			}
+			cout << "Error : this definition " << def
+					<< " is already defined before";
+			//return error with making id=-1 in order not to push it on the regularExpressions vector
+			StringPair errorPair;
+			errorPair.id = "-1";
+			return errorPair;
 		}
+	}
 	return pair;
 }
 StringPair FileReader::makeExpressionPair(string exp) {
@@ -108,15 +107,17 @@ StringPair FileReader::makeExpressionPair(string exp) {
 	pair.definition = defin;
 	for (int var = 0; var < regularExpressions.size(); ++var) {
 		StringPair currSP = regularExpressions[var];
-		if(currSP.id==id){
+		if (currSP.id == id) {
 
-			cout<<"Error : this Expression "<<exp<<" is already defined before";
+			cout << "Error : this Expression " << exp
+					<< " is already defined before";
 			//return error with making id=-1 in order not to push it on the regularExpressions vector
 			StringPair errorPair;
-			errorPair.id="-1";
+			errorPair.id = "-1";
 			return errorPair;
 		}
 	}
+
 	expressionsID.push_back(id);
 	return pair;
 }
@@ -151,10 +152,24 @@ bool FileReader::initializeForNFA() {
 
 	for (int i = 0; i < fileRead.size(); ++i) {
 		string curr = fileRead[i];
+		/**double or
+		 * or star
+		 * or concat
+		 * or plus
+		 * concat star
+		 * it means all the cases of lower priority than higher priority operation
+		 */
+		if (curr.find("||") != string::npos || curr.find("|*") != string::npos
+				|| curr.find("| ") != string::npos
+				|| curr.find("|+") != string::npos
+				|| curr.find(" *") != string::npos
+				|| curr.find(" +") != string::npos) {
+			cout << "Operation error on the definition " << curr << endl;
+		}
 		if (isExpression(curr)) {
 			StringPair regex = makeExpressionPair(curr);
-			if(regex.id!="-1")
-			regularExpressions.push_back(regex);
+			if (regex.id != "-1")
+				regularExpressions.push_back(regex);
 		} else if (isKeyWord(curr)) {
 			int pos = curr.find("{");
 			curr.replace(pos, 1, "");
@@ -182,8 +197,8 @@ bool FileReader::initializeForNFA() {
 
 		else if (isDefinition(curr)) {
 			StringPair pair = makeDefinitonPair(curr);
-			if(pair.id!="-1")
-			defs.push_back(pair);
+			if (pair.id != "-1")
+				defs.push_back(pair);
 		} else {
 			//error
 		}
