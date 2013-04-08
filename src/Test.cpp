@@ -12,6 +12,7 @@
 #include "NFA.h"
 #include "Simulator.h"
 #include "ConcatenationHandler.h"
+#include "DFA.h"
 #include <map>
 using namespace std;
 
@@ -63,11 +64,16 @@ int main()
 	n->defs = f->defs;
 	n->matchedExps=f->expressionsID;
 	n->createAll();
-//	vector<char> all_inputs;
-////	n->input ==> all_inputs 			TODO make this conversion from set to vector
-//	DFA_Builder* DFA = new DFA_Builder(n->NFATable , n->matchedExps , all_inputs);
-//	DFA->NFA_to_DFA();
+	cout << "  Start Conversion NFA to DFA " << endl;
+	vector<char> all_inputs(n->input.begin() , n->input.end());
+	for(int i = 0 ; i < (int)all_inputs.size();i++)
+		cout << all_inputs[i] << endl;
+//	n->input ==> all_inputs 			TODO make this conversion from set to vector
+	DFA_Builder* DFA = new DFA_Builder(n->NFATable , n->matchedExps , all_inputs);
+	cout << " Conversion Function " << endl;
+	DFA->NFA_to_DFA();
 //	DFA->minimize_DFA();
+//	cout << "  Start Simulator" << endl;
 //	Simulator* sim =  new Simulator(DFA->DFA , DFA->patterns);
 //	sim->open_file("src_file");
 //

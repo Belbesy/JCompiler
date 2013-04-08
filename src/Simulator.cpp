@@ -33,6 +33,8 @@ string Simulator::next_token()
 			src_file >> token;
 		else
 			return ERROR;
+
+	cout << " Token  " <<  token << endl;
 	int state = 0 , i;
 	for(i  = 0; i < (int)token.length();i++)
 	{
@@ -42,6 +44,7 @@ string Simulator::next_token()
 			break;
 		state = next_state[0]->id; // always size = 1 ???
 	}
+	cout <<  "State " << state << endl;
 	if (DFA[state]->acceptingState) // matched pattern
 	{
 		int pattern = DFA[state]->matched_pattern;
