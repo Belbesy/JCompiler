@@ -15,6 +15,7 @@ FA_State::FA_State() {
 	matched_pattern=-1;
 }
 
+
 FA_State::FA_State(int s_id) {
 	id = s_id;
 	acceptingState = false;

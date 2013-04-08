@@ -16,6 +16,7 @@
 
 using namespace std;
 
+
 class Simulator {
 public:
 	Simulator(vector<FA_State*> DFA_ , vector<string> patterns_);

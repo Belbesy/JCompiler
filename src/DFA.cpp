@@ -20,6 +20,7 @@ DFA_Builder::DFA_Builder(FSA_TABLE NFATable_,vector<string> patterns_ ,vector<ch
 	state_id = 0;
 }
 
+
 /**
  * in this method DFA logic was separated from subset construction,
  * this means DFA states were expressed using FA_State class , and were stored in DFA vector

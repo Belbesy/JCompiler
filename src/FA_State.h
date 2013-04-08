@@ -17,6 +17,7 @@ using namespace std;
 #ifndef FA_STATE_H
 #define	FA_STATE_H
 
+
 /*
  * The state of the finite Automata
  *

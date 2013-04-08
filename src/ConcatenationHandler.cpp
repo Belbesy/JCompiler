@@ -19,6 +19,7 @@ ConcatenationHandler::ConcatenationHandler(vector<string> patterns ,string separ
 	matched_len = new int[pattersnNum];
 }
 
+
 int ConcatenationHandler::getL(char a, int l,int patternID)
 {
 	while (l > 0 && a != p[patternID][l])

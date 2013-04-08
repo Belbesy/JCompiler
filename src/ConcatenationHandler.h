@@ -13,6 +13,7 @@
 
 using namespace std;
 
+
 class ConcatenationHandler {
 public:
 	ConcatenationHandler(vector<string> patterns , string separator_);

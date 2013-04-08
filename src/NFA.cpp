@@ -15,6 +15,8 @@ NFA::NFA() {
 
 }
 
+
+
 NFA::NFA(vector<StringPair> expr) {
 	expressions = expr;
 	state_id = 0;

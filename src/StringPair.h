@@ -22,4 +22,5 @@ public:
 	virtual ~StringPair();
 };
 
+
 #endif /* STRINGPAIR_H_ */
