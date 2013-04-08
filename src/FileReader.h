@@ -18,6 +18,7 @@
 using namespace std;
 class FileReader {
 
+
 protected:
 
 public:
@@ -28,6 +29,9 @@ public:
 	vector<StringPair> defs;
 	/**vector contains all the regular expression in the file to be used later */
 	vector<StringPair> regularExpressions;
+	/**vector for all expressions id**/
+		vector<string> expressionsID;
+
 
 	FileReader();
 	void readTheFile(char fileName[]);

@@ -12,6 +12,8 @@ StringPair::StringPair() {
 
 }
 
+
+
 StringPair::~StringPair() {
 	// TODO Auto-generated destructor stub
 }

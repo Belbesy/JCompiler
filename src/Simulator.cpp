@@ -15,6 +15,7 @@ Simulator::Simulator(vector<FA_State*> DFA_ , vector<string> patterns_)
 }
 
 
+
 bool Simulator::open_file(const char* file)
 {
 	src_file.open(file ,ifstream::in);
@@ -36,14 +37,14 @@ string Simulator::next_token()
 	for(i  = 0; i < (int)token.length();i++)
 	{
 		vector<FA_State*> next_state;
-		DFA[state]->getTransition(token.substr(i,1) , next_state); // TODO change token+""
+		DFA[state]->getTransition(token[i] , next_state);
 		if(next_state.empty()) // no more matching get token
 			break;
 		state = next_state[0]->id; // always size = 1 ???
 	}
 	if (DFA[state]->acceptingState) // matched pattern
 	{
-		int pattern = DFA[state]->matchedPattern;
+		int pattern = DFA[state]->matched_pattern;
 		token = token.substr(i); // update input pointer
 		// TODO insert in symbol table ?!!!
 		return patterns[pattern];

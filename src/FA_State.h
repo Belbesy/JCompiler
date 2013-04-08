@@ -17,6 +17,7 @@ using namespace std;
 #ifndef FA_STATE_H
 #define	FA_STATE_H
 
+
 /*
  * The state of the finite Automata
  *
@@ -28,22 +29,22 @@ public:
 	/**id of this state*/
 	int id;
 	/**Transitions from this state to others*/
-	multimap<string, FA_State*> transitions_to;
+	multimap<char, FA_State*> transitions_to;
 	/**if this state is accepting state or not*/
 	bool acceptingState;
-	int matchedPattern; /** the name of the pattern if it was final state */ // TODO
-
 	/**Transitions from others to this state*/
 	set<FA_State*> transitions_from;
+	/*index to the accepting token*/
+	int matched_pattern;
 	/*--------------------------------------Constructors-----------------------------------------*/
 	FA_State();
 	FA_State(int s_id);
 	FA_State(set<FA_State*> state, int s_id);
 	virtual ~FA_State();
 	/*----------------------------------------METHODS--------------------------------------------*/
-	void AddTransition(string input, FA_State* state);
+	void AddTransition(char input, FA_State* state);
 	void removeTransition(FA_State* state);
-	void getTransition(string input, vector<FA_State*> &states);
+	void getTransition(char input, vector<FA_State*> &states);
 	void operator=(const FA_State& other);
 	bool operator==(const FA_State& other);
 	void toString();

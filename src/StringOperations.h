@@ -20,4 +20,5 @@ public:
 
 };
 
+
 #endif /* STRINGOPERATIONS_H_ */

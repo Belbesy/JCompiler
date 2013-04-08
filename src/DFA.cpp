@@ -7,6 +7,8 @@
 
 #include "DFA.h"
 
+const char EPSILON = char(8);
+
 
 DFA_Builder::DFA_Builder(FSA_TABLE NFATable_,vector<string> patterns_ ,vector<char> all_inputs_)
 {
@@ -17,6 +19,7 @@ DFA_Builder::DFA_Builder(FSA_TABLE NFATable_,vector<string> patterns_ ,vector<ch
 	visited = new bool[statesNum];
 	state_id = 0;
 }
+
 
 /**
  * in this method DFA logic was separated from subset construction,
@@ -62,7 +65,7 @@ void DFA_Builder::NFA_to_DFA()
 				// apply this input to NFA state "state"
 				state = DFA_states[front][i];
 				vector<FA_State*> NFA_states;
-				NFATable[state]->getTransition("" + input, NFA_states);
+				NFATable[state]->getTransition(input, NFA_states);
 				for (int i = 0; i < (int) NFA_states.size(); i++)
 					empty_closure(NFA_states[i]->id);
 			}
@@ -71,7 +74,7 @@ void DFA_Builder::NFA_to_DFA()
 			if(added_state == state_id-1) // check whether it exists before or not
 				// new state,add it to your DFA states , and add to be queue to be explored later
 				q.push(DFA_states.size()-1);
-			DFA[front]->AddTransition(input+"" , DFA[added_state]); // TODO change input+""
+			DFA[front]->AddTransition(input, DFA[added_state]);
 		}
 	}
 }
@@ -97,10 +100,10 @@ int DFA_Builder::flush_new_state()
 			if(NFATable[i]->acceptingState)
 				if(matched_pattern == -1)
 					// first time to get final state
-					matched_pattern = NFATable[i]->matchedPattern;
+					matched_pattern = NFATable[i]->matched_pattern;
 				else
 					// get highest priority one
-					matched_pattern = min(NFATable[i]->matchedPattern , matched_pattern);
+					matched_pattern = min(NFATable[i]->matched_pattern , matched_pattern);
 		}
 //	sort(sub_states.begin() , sub_states.end()); // this sort will help comparing state later
 
@@ -114,7 +117,7 @@ int DFA_Builder::flush_new_state()
 		{
 			// TODO make sure that you have table of all patterns ( vector<int> patterns)
 			new_FA_state->acceptingState = true;
-			new_FA_state->matchedPattern = matched_pattern;
+			new_FA_state->matched_pattern = matched_pattern;
 		}
 		DFA.push_back(new_FA_state);
 		return state_id-1;
@@ -141,7 +144,7 @@ void DFA_Builder::empty_closure(int state)
 
 		// get epsilon transition from current state
 		vector<FA_State*> new_states;
-		NFATable[front]->getTransition("\\L" , new_states); // TODO change \\L
+		NFATable[front]->getTransition(EPSILON, new_states);
 
 		// add states to queue to be explored later
 		size = (int)new_states.size();

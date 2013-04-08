@@ -13,6 +13,8 @@ StringOperations::StringOperations() {
 
 }
 
+
+
 StringOperations::~StringOperations() {
 	// TODO Auto-generated destructor stub
 }
