@@ -128,7 +128,10 @@ void NFA::create_NFA(string def) {
 					OperatorStack.push(curr);
 				} else if (IsRightParanthesis(curr)) {
 					while (!IsLeftParanthesis(OperatorStack.top())) {
-						evaluate();
+						bool evaluatedone=evaluate();
+						if(!evaluatedone){
+							cout<<"Operation error on this definition "<<def<<endl;
+						}
 
 					}
 					OperatorStack.pop();
@@ -324,6 +327,7 @@ bool NFA::Star() {
 	FSA_TABLE table1;
 	/*Pop one Operand from operand stack*/
 	if (!pop(table1)) {
+
 		return false;
 	}
 	/*initialize start and end state*/
@@ -362,6 +366,7 @@ bool NFA::concat() {
 	FSA_TABLE A, B;
 	/*pop last two operands*/
 	if (!pop(B) || !pop(A)) {
+
 		return false;
 	}
 	/*add transition from A to B*/
@@ -387,10 +392,13 @@ bool NFA::plus() {
 	}
 	OperandStack.push(temp);
 	/*make operand star*/
-	Star();
+	bool stardone=Star();
 	/*concat with star*/
-	concat();
+	bool concatdone=concat();
+	if(concatdone&&stardone){
 	return true;
+	}
+	return false;
 }
 /*Union:
  *  Evaluates the union operator '|'
@@ -403,7 +411,7 @@ bool NFA::Union() {
 	/*Pop two operands from operand Stack*/
 	FSA_TABLE A, B;
 	if (!pop(B) || !pop(A)) {
-		return false;
+			return false;
 	}
 	/*initialize start and end state*/
 	FA_State *startState = new FA_State(state_id++);

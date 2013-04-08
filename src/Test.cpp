@@ -54,14 +54,15 @@ void test_conc()
 
 int main()
 {
-//	FileReader *f = new FileReader();
-//
-//	f->readTheFile("test1");
-//	f->initializeForNFA();
-//
-//	NFA *n = new NFA(f->regularExpressions);
-//	n->defs = f->defs;
-//	n->createAll();
+	FileReader *f = new FileReader();
+
+	f->readTheFile("test");
+	f->initializeForNFA();
+
+	NFA *n = new NFA(f->regularExpressions);
+	n->defs = f->defs;
+	n->matchedExps=f->expressionsID;
+	n->createAll();
 //	vector<char> all_inputs;
 ////	n->input ==> all_inputs 			TODO make this conversion from set to vector
 //	DFA_Builder* DFA = new DFA_Builder(n->NFATable , n->matchedExps , all_inputs);
@@ -82,6 +83,6 @@ int main()
 //	cout << "End of tokens" << endl;
 
 //	test_simulator();
-	test_conc();
+//	test_conc();
 	return 0;
 }

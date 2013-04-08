@@ -19,11 +19,20 @@ using namespace std;
 class FileReader {
 
 
-protected:
-
-public:
+private:
 	/**vector contains the strings in the file **/
-	vector<string> fileRead;
+		vector<string> fileRead;
+		bool isExpression(string exp);
+			bool isDefinition(string exp);
+			bool isKeyWord(string exp);
+			bool isPunc(string exp);
+
+			StringPair makeExpressionPair(string exp);
+			StringPair makeDefinitonPair(string def);
+			StringPair makeKeyPair(string key);
+			StringPair makePuncPair(string punc);
+public:
+
 	/** vector contains all the regular
 	 */
 	vector<StringPair> defs;
@@ -36,14 +45,7 @@ public:
 	FileReader();
 	void readTheFile(char fileName[]);
 	bool initializeForNFA();
-	bool isExpression(string exp);
-	bool isDefinition(string exp);
-	bool isKeyWord(string exp);
-	bool isPunc(string exp);
-	StringPair makeExpressionPair(string exp);
-	StringPair makeDefinitonPair(string def);
-	StringPair makeKeyPair(string key);
-	StringPair makePuncPair(string punc);
+
 
 	virtual ~FileReader();
 };

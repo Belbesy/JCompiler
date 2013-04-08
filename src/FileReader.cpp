@@ -25,6 +25,7 @@ FileReader::~FileReader() {
  */
 void FileReader::readTheFile(char fileName[]) {
 	string line;
+
 	ifstream myfile(fileName);
 
 	if (myfile.is_open()) {
@@ -62,7 +63,7 @@ bool FileReader::isExpression(string exp) {
 	}
 	return false;
 }
-//IMPORTANT : how to know later it's a keyword !!
+
 bool FileReader::isKeyWord(string exp) {
 
 	if (exp[0] == '{') {
@@ -85,6 +86,17 @@ StringPair FileReader::makeDefinitonPair(string def) {
 
 	pair.id = id;
 	pair.definition = defin;
+	for (int var = 0; var < defs.size(); ++var) {
+			StringPair currSP = defs[var];
+			if(currSP.id==id){
+
+				cout<<"Error : this definition "<<def<<" is already defined before";
+				//return error with making id=-1 in order not to push it on the regularExpressions vector
+				StringPair errorPair;
+				errorPair.id="-1";
+				return errorPair;
+			}
+		}
 	return pair;
 }
 StringPair FileReader::makeExpressionPair(string exp) {
@@ -94,6 +106,17 @@ StringPair FileReader::makeExpressionPair(string exp) {
 	StringPair pair;
 	pair.id = id;
 	pair.definition = defin;
+	for (int var = 0; var < regularExpressions.size(); ++var) {
+		StringPair currSP = regularExpressions[var];
+		if(currSP.id==id){
+
+			cout<<"Error : this Expression "<<exp<<" is already defined before";
+			//return error with making id=-1 in order not to push it on the regularExpressions vector
+			StringPair errorPair;
+			errorPair.id="-1";
+			return errorPair;
+		}
+	}
 	expressionsID.push_back(id);
 	return pair;
 }
@@ -129,7 +152,9 @@ bool FileReader::initializeForNFA() {
 	for (int i = 0; i < fileRead.size(); ++i) {
 		string curr = fileRead[i];
 		if (isExpression(curr)) {
-			regularExpressions.push_back(makeExpressionPair(curr));
+			StringPair regex = makeExpressionPair(curr);
+			if(regex.id!="-1")
+			regularExpressions.push_back(regex);
 		} else if (isKeyWord(curr)) {
 			int pos = curr.find("{");
 			curr.replace(pos, 1, "");
@@ -157,7 +182,7 @@ bool FileReader::initializeForNFA() {
 
 		else if (isDefinition(curr)) {
 			StringPair pair = makeDefinitonPair(curr);
-
+			if(pair.id!="-1")
 			defs.push_back(pair);
 		} else {
 			//error
