@@ -19,9 +19,11 @@ using namespace std;
 
 class Simulator {
 public:
+	vector<pair<string , string> >SYM_table;
+
 	Simulator(vector<FA_State*> DFA_ , vector<string> patterns_);
 	bool open_file(const char* file);
-	string next_token();
+	pair<string,int> next_token();
 	virtual ~Simulator();
 private:
 	string token;

@@ -25,16 +25,16 @@ bool Simulator::open_file(const char* file)
 /**
  * assuming space as separator and space as a whitespace
  */
-string Simulator::next_token()
+pair<string,int> Simulator::next_token()
 {
 	string ERROR = "";
 	if(token.empty())
 		if(src_file.good())
 			src_file >> token;
 		else
-			return ERROR;
+			return make_pair(ERROR , -1);
 
-	cout << " Token  " <<  token << endl;
+//	cout << " Token  " <<  token << endl;
 	int state = 0 , i;
 	for(i  = 0; i < (int)token.length();i++)
 	{
@@ -44,21 +44,32 @@ string Simulator::next_token()
 			break;
 		state = next_state[0]->id; // always size = 1 ???
 	}
-	cout <<  "State " << state << endl;
+//	cout <<  "State " << state << endl;
 	if (DFA[state]->acceptingState) // matched pattern
 	{
 		int pattern = DFA[state]->matched_pattern;
+		string matched_part = token.substr(0,i);
 		token = token.substr(i); // update input pointer
-		// TODO insert in symbol table ?!!!
-		return patterns[pattern];
+		//  insert in symbol table ?!!!
+		string pattern_name = patterns[pattern];
+		int sym_table_ptr = -1;
+		if(pattern_name != matched_part) // not keyword nor punctuation mark
+		{
+			SYM_table.push_back(make_pair(matched_part  , pattern_name));
+			sym_table_ptr = SYM_table.size()-1;
+		}
+		return make_pair(pattern_name , sym_table_ptr);
 	} else
 	{
-		// TODO i == 0 ??!!
-		printf("ERROR"); // TODO remove the whole token or whatever & don't return null
-		return ERROR;
+		// ERROR
+		if(i > 0)
+			// reset of the token can't match anything till the whitespace
+			cout << "ERROR unmatched token " << token << endl;
+		else
+		// this case happens if the first character can't accept so will remove the whole token
+			token = ERROR;
+		return make_pair("ERROR" , -1);
 	}
-	printf("ERROR"); // TODO token wasn't matched
-	return ERROR;
 }
 Simulator::~Simulator()
 {

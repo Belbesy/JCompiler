@@ -16,7 +16,6 @@
 #include <map>
 using namespace std;
 
-
 void test_simulator()
 {
 	vector<FA_State*> DFA;
@@ -35,11 +34,11 @@ void test_simulator()
 	sim->open_file("sim_test");
 	string lex;
 	cout << "Start tokens" << endl;
-	lex = sim->next_token();
+	lex = sim->next_token().first;
 	while (!lex.empty())
 	{
 		cout << lex << endl;
-		lex = sim->next_token();
+		lex = sim->next_token().first;
 	}
 	cout << "End of tokens" << endl;
 }
@@ -50,45 +49,116 @@ void test_conc()
 	patterns.push_back("SA");
 	patterns.push_back("SASA");
 	ConcatenationHandler handler(patterns, "+");
-	cout << handler.handle("\\)\\(SASAT\\*FS-GT\\((SA|T)X|(SA|66)X\\)*TY") << endl;
+	cout << handler.handle("\\)\\(SASAT\\*FS-GT\\((SA|T)X|(SA|66)X\\)*TY")
+			<< endl;
 }
 
-int main()
+/**
+ * this case accepts (a|b)*abb
+ */
+void test_DFA1()
 {
-	FileReader *f = new FileReader();
+	vector<char> all_inputs;
+	FSA_TABLE NFATable;
+	vector<string> patterns;
 
-	f->readTheFile("test");
-	f->initializeForNFA();
-
-	NFA *n = new NFA(f->regularExpressions);
-	n->defs = f->defs;
-	n->matchedExps=f->expressionsID;
-	n->createAll();
-	cout << "  Start Conversion NFA to DFA " << endl;
-	vector<char> all_inputs(n->input.begin() , n->input.end());
-	for(int i = 0 ; i < (int)all_inputs.size();i++)
-		cout << all_inputs[i] << endl;
-//	n->input ==> all_inputs 			TODO make this conversion from set to vector
-	DFA_Builder* DFA = new DFA_Builder(n->NFATable , n->matchedExps , all_inputs);
+	all_inputs.push_back('a');
+	all_inputs.push_back('b');
+	for (int i = 0; i < 11; i++)
+		NFATable.push_back(new FA_State(i));
+	NFATable[10]->acceptingState = true;
+	NFATable[0]->AddTransition(char(8), NFATable[1]);
+	NFATable[0]->AddTransition(char(8), NFATable[7]);
+	NFATable[1]->AddTransition(char(8), NFATable[2]);
+	NFATable[1]->AddTransition(char(8), NFATable[4]);
+	NFATable[2]->AddTransition('a', NFATable[3]);
+	NFATable[4]->AddTransition('b', NFATable[5]);
+	NFATable[3]->AddTransition(char(8), NFATable[6]);
+	NFATable[5]->AddTransition(char(8), NFATable[6]);
+	NFATable[6]->AddTransition(char(8), NFATable[1]);
+	NFATable[6]->AddTransition(char(8), NFATable[7]);
+	NFATable[7]->AddTransition('a', NFATable[8]);
+	NFATable[8]->AddTransition('b', NFATable[9]);
+	NFATable[9]->AddTransition('b', NFATable[10]);
+	DFA_Builder* DFA = new DFA_Builder(NFATable, patterns, all_inputs);
 	cout << " Conversion Function " << endl;
 	DFA->NFA_to_DFA();
+}
+
+/**
+ * this DFA accepts ab|abb|a*b+
+ * */
+
+void test_DFA2()
+{
+	vector<char> all_inputs;
+	FSA_TABLE NFATable;
+	vector<string> patterns;
+
+	all_inputs.push_back('a');
+	all_inputs.push_back('b');
+	for (int i = 0; i < 9; i++)
+		NFATable.push_back(new FA_State(i));
+
+	NFATable[2]->acceptingState = true;
+	NFATable[6]->acceptingState = true;
+	NFATable[8]->acceptingState = true;
+
+	NFATable[0]->AddTransition(char(8), NFATable[1]);
+	NFATable[1]->AddTransition('a', NFATable[2]);
+
+	NFATable[0]->AddTransition(char(8), NFATable[3]);
+	NFATable[3]->AddTransition('a', NFATable[4]);
+	NFATable[4]->AddTransition('b', NFATable[5]);
+	NFATable[5]->AddTransition('b', NFATable[6]);
+
+	NFATable[0]->AddTransition(char(8), NFATable[7]);
+	NFATable[7]->AddTransition('a', NFATable[7]);
+	NFATable[7]->AddTransition('b', NFATable[8]);
+	NFATable[8]->AddTransition('b', NFATable[8]);
+
+	DFA_Builder* DFA = new DFA_Builder(NFATable, patterns, all_inputs);
+	cout << " Conversion Function " << endl;
+	DFA->NFA_to_DFA();
+}
+int main()
+{
+//	FileReader *f = new FileReader();
+//
+//	f->readTheFile("test");
+//	f->initializeForNFA();
+//
+//	NFA *n = new NFA(f->regularExpressions);
+//	n->defs = f->defs;
+//	n->matchedExps = f->expressionsID;
+//	n->createAll();
+//	cout << "  Start Conversion NFA to DFA " << endl;
+//	vector<char> all_inputs(n->input.begin(), n->input.end());
+//	for (int i = 0; i < (int) all_inputs.size(); i++)
+//		cout << all_inputs[i] << endl;
+////	n->input ==> all_inputs 			TODO make this conversion from set to vector
+//	DFA_Builder* DFA = new DFA_Builder(n->NFATable, n->matchedExps, all_inputs);
+//	cout << " Conversion Function " << endl;
+//	DFA->NFA_to_DFA();
 //	DFA->minimize_DFA();
 //	cout << "  Start Simulator" << endl;
-//	Simulator* sim =  new Simulator(DFA->DFA , DFA->patterns);
+//	Simulator* sim = new Simulator(DFA->DFA, DFA->patterns);
 //	sim->open_file("src_file");
 //
 //	// TODO change this according to simulator changes
 //	string lex;
 //	cout << "Start tokens" << endl;
-//	lex = sim->next_token();
+//	lex = sim->next_token().first;
 //	while (!lex.empty())
 //	{
 //		cout << lex << endl;
-//		lex = sim->next_token();
+//		lex = sim->next_token().first;
 //	}
 //	cout << "End of tokens" << endl;
 
-//	test_simulator();
+	test_simulator();
 //	test_conc();
+//	test_DFA1();
+//	test_DFA2();
 	return 0;
 }
