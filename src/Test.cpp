@@ -127,22 +127,22 @@ int main()
 {
 	FileReader *f = new FileReader();
 
-//	f->readTheFile("test");
-	vector<string> myv;
-			myv.push_back("{boolean if}");
-			myv.push_back("id: letter (letter|digit)*");
-
-			myv.push_back("num: digit+|digit+ . (\L|E digits)");
-			myv.push_back("letters: letter*");
-
-			myv.push_back("letter = a-z|A-Z");
-			myv.push_back("digit = 0-9");
-
-			myv.push_back("digits = digit+");
-			myv.push_back("addop: \\+|-");
-			myv.push_back("mulop: \\*|/");
-			myv.push_back("[; , \\( \\) { }]");
-			f->fileRead = myv;
+	f->readTheFile("test");
+//	vector<string> myv;
+//			myv.push_back("{boolean if}");
+//			myv.push_back("id: letter (letter|digit)*");
+//
+//			myv.push_back("num: digit+|digit+ . (\L|E digits)");
+//			myv.push_back("letters: letter*");
+//
+//			myv.push_back("letter = a-z|A-Z");
+//			myv.push_back("digit = 0-9");
+//
+//			myv.push_back("digits = digit+");
+//			myv.push_back("addop: \\+|-");
+//			myv.push_back("mulop: \\*|/");
+//			myv.push_back("[; , \\( \\) { }]");
+//			f->fileRead = myv;
 
 
 	f->initializeForNFA();
