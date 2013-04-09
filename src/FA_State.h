@@ -14,9 +14,13 @@
 #include <list>
 #include <iostream>
 using namespace std;
+
+
+
 #ifndef FA_STATE_H
 #define	FA_STATE_H
 
+const char EPSILON = '$';
 
 /*
  * The state of the finite Automata
@@ -56,4 +60,3 @@ public:
 
 // NFA Table
 typedef deque<FA_State*> FSA_TABLE;
-

@@ -7,8 +7,6 @@
 
 #include "DFA.h"
 
-const char EPSILON = char(8);
-
 
 
 DFA_Builder::DFA_Builder(FSA_TABLE NFATable_,vector<string> patterns_ ,vector<char> all_inputs_)
@@ -42,6 +40,17 @@ void DFA_Builder::NFA_to_DFA()
 		visited[i] = false;
 
 	int state = NFATable.front()->id;
+
+	vector<FA_State*> ep;
+
+	cout << "Start state " << state << endl;
+	NFATable[state]->getTransition(EPSILON, ep);
+	cout << "Epsilon transitions" << endl;
+	for (int i = 0; i < ep.size(); i++)
+		cout << ep[i]->id << "  ";
+	cout << endl;
+
+
 
 	empty_closure(state);
 	flush_new_state();

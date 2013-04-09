@@ -69,16 +69,16 @@ void test_DFA1()
 	for (int i = 0; i < 11; i++)
 		NFATable.push_back(new FA_State(i));
 	NFATable[10]->acceptingState = true;
-	NFATable[0]->AddTransition(char(8), NFATable[1]);
-	NFATable[0]->AddTransition(char(8), NFATable[7]);
-	NFATable[1]->AddTransition(char(8), NFATable[2]);
-	NFATable[1]->AddTransition(char(8), NFATable[4]);
+	NFATable[0]->AddTransition(EPSILON, NFATable[1]);
+	NFATable[0]->AddTransition(EPSILON, NFATable[7]);
+	NFATable[1]->AddTransition(EPSILON, NFATable[2]);
+	NFATable[1]->AddTransition(EPSILON, NFATable[4]);
 	NFATable[2]->AddTransition('a', NFATable[3]);
 	NFATable[4]->AddTransition('b', NFATable[5]);
-	NFATable[3]->AddTransition(char(8), NFATable[6]);
-	NFATable[5]->AddTransition(char(8), NFATable[6]);
-	NFATable[6]->AddTransition(char(8), NFATable[1]);
-	NFATable[6]->AddTransition(char(8), NFATable[7]);
+	NFATable[3]->AddTransition(EPSILON, NFATable[6]);
+	NFATable[5]->AddTransition(EPSILON, NFATable[6]);
+	NFATable[6]->AddTransition(EPSILON, NFATable[1]);
+	NFATable[6]->AddTransition(EPSILON, NFATable[7]);
 	NFATable[7]->AddTransition('a', NFATable[8]);
 	NFATable[8]->AddTransition('b', NFATable[9]);
 	NFATable[9]->AddTransition('b', NFATable[10]);
@@ -106,15 +106,15 @@ void test_DFA2()
 	NFATable[6]->acceptingState = true;
 	NFATable[8]->acceptingState = true;
 
-	NFATable[0]->AddTransition(char(8), NFATable[1]);
+	NFATable[0]->AddTransition(EPSILON, NFATable[1]);
 	NFATable[1]->AddTransition('a', NFATable[2]);
 
-	NFATable[0]->AddTransition(char(8), NFATable[3]);
+	NFATable[0]->AddTransition(EPSILON, NFATable[3]);
 	NFATable[3]->AddTransition('a', NFATable[4]);
 	NFATable[4]->AddTransition('b', NFATable[5]);
 	NFATable[5]->AddTransition('b', NFATable[6]);
 
-	NFATable[0]->AddTransition(char(8), NFATable[7]);
+	NFATable[0]->AddTransition(EPSILON, NFATable[7]);
 	NFATable[7]->AddTransition('a', NFATable[7]);
 	NFATable[7]->AddTransition('b', NFATable[8]);
 	NFATable[8]->AddTransition('b', NFATable[8]);
@@ -151,30 +151,44 @@ int main()
 	n->defs = f->defs;
 	n->matchedExps = f->expressionsID;
 	n->createAll();
-//	cout << "  Start Conversion NFA to DFA " << endl;
-//	vector<char> all_inputs(n->input.begin(), n->input.end());
-//	for (int i = 0; i < (int) all_inputs.size(); i++)
-//		cout << all_inputs[i] << endl;
+
+	//==============================================================
+
+	/// TAG ?!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	cout << " ???????????????????????????? " << endl;
+	n->NFATable[18]->toString();
+	cout << " ???????????????????????????? " << endl;
+	//===================================================================
+
+
+
+	cout << "  Start Conversion NFA to DFA " << endl;
+	vector<char> all_inputs;
+	for (set<char>::iterator i = n->input.begin(); i != n->input.end(); i++)
+	{
+		all_inputs.push_back(*i);
+		cout << *i << endl;
+	}
 ////	n->input ==> all_inputs 			TODO make this conversion from set to vector
-//	DFA_Builder* DFA = new DFA_Builder(n->NFATable, n->matchedExps, all_inputs);
-//	cout << " Conversion Function " << endl;
-//	DFA->NFA_to_DFA();
+	DFA_Builder* DFA = new DFA_Builder(n->NFATable, n->matchedExps, all_inputs);
+	cout << " Conversion Function " << endl;
+	DFA->NFA_to_DFA();
 //	DFA->minimize_DFA();
-//	cout << "  Start Simulator" << endl;
-//	Simulator* sim = new Simulator(DFA->DFA, DFA->patterns);
-//	sim->open_file("src_file");
+	cout << "  Start Simulator" << endl;
+	Simulator* sim = new Simulator(DFA->DFA, DFA->patterns);
+	sim->open_file("src_file");
 //
-//	// TODO change this according to simulator changes
-//	string lex;
-//	cout << "Start tokens" << endl;
-//	lex = sim->next_token().first;
+	string lex;
+	cout << "Start tokens" << endl;
+	lex = sim->next_token().first;
 //	while (!lex.empty())
 //	{
-//		cout << lex << endl;
+		cout << lex << endl;
 //		lex = sim->next_token().first;
 //	}
-//	cout << "End of tokens" << endl;
+	cout << "End of tokens" << endl;
 
+	n->NFATable[18]->toString();
 //	test_simulator();
 //	test_conc();
 //	test_DFA1();

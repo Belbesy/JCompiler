@@ -43,7 +43,7 @@ void NFA::createAll() {
 		string matched = expressions[var].id;
 		for (int i = 0; i < (int) matchedExps.size(); ++i) {
 			string currExp = matchedExps[i];
-cout << matched << "    " << currExp<<endl;
+			cout << matched << "    " << currExp<<endl;
 			if (matchedExps[i] == expressions[var].id) {
 				currID = i;
 				break;
@@ -122,7 +122,7 @@ void NFA::create_NFA(string def, stack<char> OperatorStack1) {
 						}
 					} else {
 						if (temp[0] == '\L') {
-							push_NFA(char(8));
+							push_NFA(EPSILON);
 						} else {
 							push_NFA(temp[0]);
 							//push to input set
@@ -216,7 +216,7 @@ void NFA::push_NFA(string s) {
 		FA_State* temp = new FA_State(state_id++);
 		temp->matched_pattern = currID;
 		startState->AddTransition(i, temp);
-		temp->AddTransition(char(8), endState);
+		temp->AddTransition(EPSILON, endState);
 		input.insert(i);
 		NFATable.push_back(temp);
 	}
@@ -348,16 +348,16 @@ bool NFA::Star() {
 	endState->matched_pattern = currID;
 
 //make epsilon transition from start state to end state
-	stateStart->AddTransition(char(8), endState);
+	stateStart->AddTransition(EPSILON, endState);
 
 //add epsilon transition from start state to the first state of the operand
-	stateStart->AddTransition(char(8), table1[0]);
+	stateStart->AddTransition(EPSILON, table1[0]);
 
 //add epsilon transition from end state of the operand to the end state
-	table1[table1.size() - 1]->AddTransition(char(8), endState);
+	table1[table1.size() - 1]->AddTransition(EPSILON, endState);
 
 //add epsilon transition from end state of the operand to start state of the operand
-	table1[table1.size() - 1]->AddTransition(char(8), table1[0]);
+	table1[table1.size() - 1]->AddTransition(EPSILON, table1[0]);
 
 	/*add start and end state*/
 	table1.push_back(endState);
@@ -381,7 +381,7 @@ bool NFA::concat() {
 		return false;
 	}
 	/*add transition from A to B*/
-	A[A.size() - 1]->AddTransition(char(8), B[0]);
+	A[A.size() - 1]->AddTransition(EPSILON, B[0]);
 	A.insert(A.end(), B.begin(), B.end());
 	/*push back NFA to the operand stack*/
 	OperandStack.push(A);
@@ -430,14 +430,14 @@ bool NFA::Union() {
 	startState->matched_pattern = currID;
 	endState->matched_pattern = currID;
 	/*add transition from start state to first state of one of the operands*/
-	startState->AddTransition(char(8), A[0]);
+	startState->AddTransition(EPSILON, A[0]);
 
 	/*add transition from start state to the other operand */
-	startState->AddTransition(char(8), B[0]);
+	startState->AddTransition(EPSILON, B[0]);
 
 	/*add transition from the last state of both operands to the end state*/
-	A[A.size() - 1]->AddTransition(char(8), endState);
-	B[B.size() - 1]->AddTransition(char(8), endState);
+	A[A.size() - 1]->AddTransition(EPSILON, endState);
+	B[B.size() - 1]->AddTransition(EPSILON, endState);
 
 	/*push end state in the operand B*/
 	B.push_back(endState);

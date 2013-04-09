@@ -96,4 +96,11 @@ void FA_State::toString() {
 		it++;
 	}
 
+	vector<FA_State*> ep;
+	getTransition(EPSILON , ep);
+	cout << "Epsilon transitions" << endl;
+	for(int i = 0; i < ep.size();i++)
+		cout << ep[i]->id << "  ";
+	cout << endl;
+
 }
