@@ -114,20 +114,17 @@ void NFA::create_NFA(string def, stack<char> OperatorStack1) {
 					temp = "";
 				} else {
 					/*make NFA for it then push into operand stack*/
-					if (temp.size() != 1) {
-						if (temp[1] == '-') {
-							push_NFA(temp);
-						} else {
-							//error
-						}
-					} else {
-						if (temp[0] == '\L') {
+					if (temp[0] == '\\') {
+						if (temp[1] == 'L') {
 							push_NFA(EPSILON);
 						} else {
-							push_NFA(temp[0]);
-							//push to input set
-							input.insert(temp[0]);
+							push_NFA(char(temp[1]));
+							input.insert(temp[1]);
 						}
+						//push to input set
+					}else {
+						push_NFA(char(temp[0]));
+						input.insert(temp[0]);
 					}
 
 					temp = "";
@@ -161,6 +158,7 @@ void NFA::create_NFA(string def, stack<char> OperatorStack1) {
 		}
 
 	}
+	cout << temp << endl;
 	if (temp != "") {
 		string defin = defsNFA[temp];
 		if (defin.size() != 0) {
@@ -169,12 +167,25 @@ void NFA::create_NFA(string def, stack<char> OperatorStack1) {
 			temp = "";
 		} else {
 			if (temp.size() != 1) {
-				if (temp[1] == '-') {
+
+				if (temp[0] == '\\') {
+					if (temp[1] == 'L') {
+						push_NFA(EPSILON);
+					} else {
+						push_NFA(char(temp[1]));
+						input.insert(temp[1]);
+					}
+					//push to input set
+
+				} else if (temp[1] == '-') {
 					push_NFA(temp);
+
+
 				} else {
 					//error
 				}
 			} else {
+
 				push_NFA(temp[0]);
 				//push to input set
 				input.insert(temp[0]);
