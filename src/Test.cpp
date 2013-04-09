@@ -125,15 +125,32 @@ void test_DFA2()
 }
 int main()
 {
-//	FileReader *f = new FileReader();
-//
+	FileReader *f = new FileReader();
+
 //	f->readTheFile("test");
-//	f->initializeForNFA();
-//
-//	NFA *n = new NFA(f->regularExpressions);
-//	n->defs = f->defs;
-//	n->matchedExps = f->expressionsID;
-//	n->createAll();
+	vector<string> myv;
+			myv.push_back("{boolean if}");
+			myv.push_back("id: letter (letter|digit)*");
+
+			myv.push_back("num: digit+|digit+ . (\L|E digits)");
+			myv.push_back("letters: letter*");
+
+			myv.push_back("letter = a-z|A-Z");
+			myv.push_back("digit = 0-9");
+
+			myv.push_back("digits = digit+");
+			myv.push_back("addop: \\+|-");
+			myv.push_back("mulop: \\*|/");
+			myv.push_back("[; , \\( \\) { }]");
+			f->fileRead = myv;
+
+
+	f->initializeForNFA();
+
+	NFA *n = new NFA(f->regularExpressions);
+	n->defs = f->defs;
+	n->matchedExps = f->expressionsID;
+	n->createAll();
 //	cout << "  Start Conversion NFA to DFA " << endl;
 //	vector<char> all_inputs(n->input.begin(), n->input.end());
 //	for (int i = 0; i < (int) all_inputs.size(); i++)
@@ -158,7 +175,7 @@ int main()
 //	}
 //	cout << "End of tokens" << endl;
 
-	test_simulator();
+//	test_simulator();
 //	test_conc();
 //	test_DFA1();
 //	test_DFA2();

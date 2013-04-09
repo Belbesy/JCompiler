@@ -20,8 +20,7 @@ class FileReader {
 
 
 private:
-	/**vector contains the strings in the file **/
-		vector<string> fileRead;
+
 		bool isExpression(string exp);
 			bool isDefinition(string exp);
 			bool isKeyWord(string exp);
@@ -32,7 +31,8 @@ private:
 			StringPair makeKeyPair(string key);
 			StringPair makePuncPair(string punc);
 public:
-
+			/**vector contains the strings in the file **/
+					vector<string> fileRead;
 	/** vector contains all the regular
 	 */
 	vector<StringPair> defs;

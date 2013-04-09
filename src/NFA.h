@@ -11,21 +11,19 @@
 #include <map>
 #include <string>
 
-
 class NFA {
 private:
 	bool isDef;
 public:
 	std::set<char> input;
 	vector<StringPair> defs;
-	map<string, FSA_TABLE> defsNFA;
+	map<string, string> defsNFA;
 	/*regular expressions*/
 	vector<StringPair> expressions;
 	/*NFAs for regular expressions*/
 	vector<FSA_TABLE> NFAs;
 	/**vector for all matched expression**/
 	vector<string> matchedExps;
-
 
 	int currID;
 	NFA();
@@ -44,7 +42,7 @@ public:
 
 	/*METHODS*/
 
-	void create_NFA(string expr);
+	void create_NFA(string expr, stack<char> OperatorStack);
 	bool concat();
 	bool Star();
 	bool Union();
@@ -57,7 +55,7 @@ public:
 	bool IsRightParanthesis(char c);
 	void push_NFA(char s);
 	void push_NFA(string s);
-	bool evaluate();
+	bool evaluate(stack<char> OperatorStack);
 	bool pop(FSA_TABLE& NFATable);
 	void createAll();
 	void createNFADefs();

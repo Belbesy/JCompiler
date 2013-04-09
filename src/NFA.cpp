@@ -10,25 +10,24 @@
 #include <string>
 NFA::NFA() {
 	state_id = 0;
-	currID=-1;
+	currID = -1;
 	isDef = false;
 
 }
 
-
-
 NFA::NFA(vector<StringPair> expr) {
 	expressions = expr;
 	state_id = 0;
-	currID=-1;
+	currID = -1;
 	isDef = false;
 
 }
 /*create all definitions*/
 void NFA::createNFADefs() {
-	for (int var = 0; var < (int)defs.size(); ++var) {
-		create_NFA(defs[var].definition);
-		defsNFA.insert(make_pair(defs[var].id, NFATable));
+	for (int var = 0; var < defs.size(); ++var) {
+
+		defsNFA.insert(make_pair(defs[var].id, defs[var].definition));
+		cout << defs[var].id << " " << defs[var].definition << endl;
 	}
 
 }
@@ -36,45 +35,56 @@ void NFA::createNFADefs() {
  * createAll : create all definitions and regular expressions
  * */
 void NFA::createAll() {
-	isDef=true;
+	isDef = true;
 	createNFADefs();
 	//create NFA
-	isDef=false;
-	for (int var = 0; var < (int)expressions.size(); ++var) {
-		string matched=expressions[var].id;
-		for (int i = 0; i < (int)matchedExps.size(); ++i) {
+	isDef = false;
+	for (int var = 0; var < (int) expressions.size(); ++var) {
+		string matched = expressions[var].id;
+		for (int i = 0; i < (int) matchedExps.size(); ++i) {
 			string currExp = matchedExps[i];
-
+cout << matched << "    " << currExp<<endl;
 			if (matchedExps[i] == expressions[var].id) {
 				currID = i;
 				break;
 			}
 		}
-		create_NFA(expressions[var].definition);
-
+		create_NFA(expressions[var].definition, OperatorStack);
+		pop(NFATable);
+//		if (!isDef) {
+			cout << "Accepted with id " << currID << endl;
+			NFATable[NFATable.size() - 1]->matched_pattern = currID;
+			NFATable[NFATable.size() - 1]->acceptingState = true;
+//		}
 		NFAs.push_back(NFATable);
 	}
-	for (int var = 0; var < (int)NFAs.size(); ++var) {
+	for (int var = 0; var < (int) NFAs.size(); ++var) {
 		OperandStack.push(NFAs[var]);
 	}
 	while (OperandStack.size() > 1) {
 		Union();
 	}
+
 	pop(NFATable);
+//	if (!isDef) {
+		cout << "Accepted with id " << currID << endl;
+		NFATable[NFATable.size() - 1]->matched_pattern = currID;
+		NFATable[NFATable.size() - 1]->acceptingState = true;
+//	}
 	cout << "------------------------------" << endl;
 	cout << "Front State " << NFATable.front()->id << " End State "
 			<< NFATable.back()->id << endl;
 
-	for (int var = 0; var < (int)NFATable.size(); ++var) {
+	for (int var = 0; var < (int) NFATable.size(); ++var) {
 		NFATable[var]->toString();
 	}
 }
 /*create_NFA:
  * Creates Nondeterministic Finite Automata from a Regular Expression
  * */
-void NFA::create_NFA(string def) {
+void NFA::create_NFA(string def, stack<char> OperatorStack1) {
 	string temp = "";
-	for (int i = 0; i < (int)def.size(); ++i) {
+	for (int i = 0; i < def.size(); ++i) {
 		bool isNormalOperator = true;
 		char curr = def[i];
 		/* if char is input*/
@@ -84,23 +94,23 @@ void NFA::create_NFA(string def) {
 		else {
 			if (temp != "") {
 				/*if reserved symbol then an operator*/
-				if (temp != "\\L") {
+				if (temp == "\\") {
 
 					if (temp.size() == 1 && temp[0] == '\\') {
 						isNormalOperator = false;
 						temp = "";
 						temp += curr;
 					} else if (temp[0] == '\\') {
+						cout << "anaaaa" << temp << endl;
 						/*remove \\ from string*/
 						temp = temp.substr(1, temp.size() - 1);
-
 					}
 				}
 				/*get NFA for this definition from map*/
-				FSA_TABLE defin = defsNFA[temp];
+				string defin = defsNFA[temp];
 				if (defin.size() != 0) {
-					/*insert this NFA into operand stack*/
-					OperandStack.push(defin);
+					stack<char> s;
+					create_NFA(defin, s);
 					temp = "";
 				} else {
 					/*make NFA for it then push into operand stack*/
@@ -111,9 +121,13 @@ void NFA::create_NFA(string def) {
 							//error
 						}
 					} else {
-						push_NFA(temp[0]);
-						//push to input set
-						input.insert(temp[0]);
+						if (temp[0] == '\L') {
+							push_NFA(char(8));
+						} else {
+							push_NFA(temp[0]);
+							//push to input set
+							input.insert(temp[0]);
+						}
 					}
 
 					temp = "";
@@ -122,27 +136,25 @@ void NFA::create_NFA(string def) {
 			/*if not reserved symbol */
 			if (isNormalOperator) {
 				/*insert into operand stack if empty*/
-				if (OperatorStack.empty()) {
-					OperatorStack.push(curr);
+				if (OperatorStack1.empty()) {
+					OperatorStack1.push(curr);
 				} else if (IsLeftParanthesis(curr)) {
-					OperatorStack.push(curr);
+					OperatorStack1.push(curr);
 				} else if (IsRightParanthesis(curr)) {
-					while (!IsLeftParanthesis(OperatorStack.top())) {
-						bool evaluatedone=evaluate();
-						if(!evaluatedone){
-							cout<<"Operation error on this definition "<<def<<endl;
-						}
-
+					while (!IsLeftParanthesis(OperatorStack1.top())) {
+						evaluate(OperatorStack1);
+						OperatorStack1.pop();
 					}
-					OperatorStack.pop();
+					OperatorStack1.pop();
 				} else {
 					//Normal operator
-					while (!OperatorStack.empty()
-							&& Presedence(curr, OperatorStack.top())) {
-						evaluate();
+					while (!OperatorStack1.empty()
+							&& Presedence(curr, OperatorStack1.top())) {
+						evaluate(OperatorStack1);
+						OperatorStack1.pop();
 
 					}
-					OperatorStack.push(curr);
+					OperatorStack1.push(curr);
 				}
 			}
 
@@ -150,9 +162,10 @@ void NFA::create_NFA(string def) {
 
 	}
 	if (temp != "") {
-		FSA_TABLE defin = defsNFA[temp];
+		string defin = defsNFA[temp];
 		if (defin.size() != 0) {
-			OperandStack.push(defin);
+			stack<char> s;
+			create_NFA(defin, s);
 			temp = "";
 		} else {
 			if (temp.size() != 1) {
@@ -168,15 +181,12 @@ void NFA::create_NFA(string def) {
 			}
 		}
 	}
-	while (!OperatorStack.empty()) {
-		evaluate();
+	while (!OperatorStack1.empty()) {
+		cout << OperatorStack1.size() << endl;
 
-	}
-	pop(NFATable);
-	if(!isDef){
-		cout<<"Accepted with id "<<currID<<endl;
-		NFATable[NFATable.size()-1]->matched_pattern =currID;
-		NFATable[NFATable.size()-1]->acceptingState=true;
+		evaluate(OperatorStack1);
+		OperatorStack1.pop();
+
 	}
 }
 /*push_NFA:
@@ -187,8 +197,8 @@ void NFA::push_NFA(char s) {
 	FA_State *state1 = new FA_State(state_id++);
 
 	state0->AddTransition(s, state1);
-	state0->matched_pattern  = currID;
-	state1->matched_pattern  = currID;
+	state0->matched_pattern = currID;
+	state1->matched_pattern = currID;
 	FSA_TABLE NFATable;
 	NFATable.push_back(state0);
 	NFATable.push_back(state1);
@@ -198,20 +208,19 @@ void NFA::push_NFA(char s) {
 void NFA::push_NFA(string s) {
 	FA_State *startState = new FA_State(state_id++);
 	FA_State *endState = new FA_State(state_id++);
-	startState->matched_pattern  = currID;
-	endState->matched_pattern  = currID;
+	startState->matched_pattern = currID;
+	endState->matched_pattern = currID;
 	FSA_TABLE NFATable;
 	NFATable.push_back(startState);
 	for (int i = s[0]; i <= s[2]; i++) {
 		FA_State* temp = new FA_State(state_id++);
-		temp->matched_pattern  = currID;
+		temp->matched_pattern = currID;
 		startState->AddTransition(i, temp);
 		temp->AddTransition(char(8), endState);
 		input.insert(i);
 		NFATable.push_back(temp);
 	}
-	if(!isDef){
-
+	if (!isDef) {
 
 //	endState->acceptingState = true;
 	}
@@ -258,13 +267,15 @@ void NFA::push_NFA(string s) {
 //			NFATable[var]->toString();
 //		}
 }
+
 /*evaluate :
  * check what is the operator then call proper method
  * */
-bool NFA::evaluate() {
-	if (OperatorStack.size() > 0) {
-		char top = OperatorStack.top();
-		OperatorStack.pop();
+bool NFA::evaluate(stack<char> OperatorStack1) {
+	if (OperatorStack1.size() > 0) {
+		char top = OperatorStack1.top();
+		OperatorStack1.pop();
+
 		if (top == 42) {
 			return Star();
 		} else if (top == 124) {
@@ -333,8 +344,8 @@ bool NFA::Star() {
 	/*initialize start and end state*/
 	FA_State* stateStart = new FA_State(state_id++);
 	FA_State* endState = new FA_State(state_id++);
-	stateStart->matched_pattern  = currID;
-	endState->matched_pattern  = currID;
+	stateStart->matched_pattern = currID;
+	endState->matched_pattern = currID;
 
 //make epsilon transition from start state to end state
 	stateStart->AddTransition(char(8), endState);
@@ -387,16 +398,16 @@ bool NFA::plus() {
 	cout << "Plus" << endl;
 	/*get last operand*/
 	FSA_TABLE temp = OperandStack.top();
-	for (int var = 0; var < (int)temp.size(); ++var) {
+	for (int var = 0; var < (int) temp.size(); ++var) {
 		temp[var]->id = state_id++;
 	}
 	OperandStack.push(temp);
 	/*make operand star*/
-	bool stardone=Star();
+	bool stardone = Star();
 	/*concat with star*/
-	bool concatdone=concat();
-	if(concatdone&&stardone){
-	return true;
+	bool concatdone = concat();
+	if (concatdone && stardone) {
+		return true;
 	}
 	return false;
 }
@@ -411,13 +422,13 @@ bool NFA::Union() {
 	/*Pop two operands from operand Stack*/
 	FSA_TABLE A, B;
 	if (!pop(B) || !pop(A)) {
-			return false;
+		return false;
 	}
 	/*initialize start and end state*/
 	FA_State *startState = new FA_State(state_id++);
 	FA_State *endState = new FA_State(state_id++);
-	startState->matched_pattern  = currID;
-	endState->matched_pattern  = currID;
+	startState->matched_pattern = currID;
+	endState->matched_pattern = currID;
 	/*add transition from start state to first state of one of the operands*/
 	startState->AddTransition(char(8), A[0]);
 
