@@ -17,6 +17,7 @@
 using namespace std;
 
 
+
 class Simulator {
 public:
 	vector<pair<string , string> >SYM_table;

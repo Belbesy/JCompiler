@@ -16,6 +16,8 @@
 #include <map>
 using namespace std;
 
+
+
 void test_simulator()
 {
 	vector<FA_State*> DFA;

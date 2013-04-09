@@ -16,6 +16,7 @@ Simulator::Simulator(vector<FA_State*> DFA_ , vector<string> patterns_)
 
 
 
+
 bool Simulator::open_file(const char* file)
 {
 	src_file.open(file ,ifstream::in);

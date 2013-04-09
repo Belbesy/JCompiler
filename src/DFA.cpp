@@ -10,6 +10,7 @@
 const char EPSILON = char(8);
 
 
+
 DFA_Builder::DFA_Builder(FSA_TABLE NFATable_,vector<string> patterns_ ,vector<char> all_inputs_)
 {
 	NFATable = NFATable_;

@@ -10,6 +10,7 @@
 
 const string esp_patterns[6] = {"\\-" , "\\|" , "\\+" , "\\*" , "\\(","\\)"};
 
+
 ConcatenationHandler::ConcatenationHandler(vector<string> patterns ,string separator_)
 {
 	separator = separator_;
