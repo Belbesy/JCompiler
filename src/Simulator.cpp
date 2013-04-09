@@ -56,8 +56,15 @@ pair<string,int> Simulator::next_token()
 		int sym_table_ptr = -1;
 		if(pattern_name != matched_part) // not keyword nor punctuation mark
 		{
-			SYM_table.push_back(make_pair(matched_part  , pattern_name));
-			sym_table_ptr = SYM_table.size()-1;
+			int size = SYM_table.size();
+			for(int i = 0; i < size;i++)
+				if(SYM_table[i].first == matched_part)
+					sym_table_ptr = i;
+			if (sym_table_ptr == -1)
+			{
+				SYM_table.push_back(make_pair(matched_part, pattern_name));
+				sym_table_ptr = SYM_table.size() - 1;
+			}
 		}
 		return make_pair(pattern_name , sym_table_ptr);
 	} else
