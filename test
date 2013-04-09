@@ -4,6 +4,6 @@ id: letter (letter|digit)*
 letters: letter*
 digit = 0-9
 digits = digit+
-addop: \\+|-
-mulop: \\*|/
-[; , \\( \\) { }]
+addop: \+|-
+mulop: \*|/
+[; , \( \) { }]
