@@ -95,12 +95,4 @@ void FA_State::toString() {
 		cout << "From state " << id << s << "  To state " << state->id <<" matchedExpression "<<state->matched_pattern<<" Accepting  " <<state->acceptingState<<  endl;
 		it++;
 	}
-
-	vector<FA_State*> ep;
-	getTransition(EPSILON , ep);
-	cout << "Epsilon transitions" << endl;
-	for(int i = 0; i < ep.size();i++)
-		cout << ep[i]->id << "  ";
-	cout << endl;
-
 }

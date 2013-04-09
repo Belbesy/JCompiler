@@ -35,7 +35,7 @@ pair<string,int> Simulator::next_token()
 		else
 			return make_pair(ERROR , -1);
 
-	cout << " Token  " <<  token << endl;
+//	cout << " Token  " <<  token << endl;
 	int state = 0 , i;
 	for(i  = 0; i < (int)token.length();i++)
 	{
@@ -48,6 +48,7 @@ pair<string,int> Simulator::next_token()
 //	cout <<  "State " << state << endl;
 	if (DFA[state]->acceptingState) // matched pattern
 	{
+//		cout << " AC " << endl;
 		int pattern = DFA[state]->matched_pattern;
 		string matched_part = token.substr(0,i);
 		token = token.substr(i); // update input pointer

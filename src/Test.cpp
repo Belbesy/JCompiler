@@ -152,16 +152,6 @@ int main()
 	n->matchedExps = f->expressionsID;
 	n->createAll();
 
-	//==============================================================
-
-	/// TAG ?!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	cout << " ???????????????????????????? " << endl;
-	n->NFATable[18]->toString();
-	cout << " ???????????????????????????? " << endl;
-	//===================================================================
-
-
-
 	cout << "  Start Conversion NFA to DFA " << endl;
 	vector<char> all_inputs;
 	for (set<char>::iterator i = n->input.begin(); i != n->input.end(); i++)
@@ -169,7 +159,9 @@ int main()
 		all_inputs.push_back(*i);
 		cout << *i << endl;
 	}
-////	n->input ==> all_inputs 			TODO make this conversion from set to vector
+//	cout << "AAAAAAAA " << n->input.count('0') << endl;
+//	cout << "AAAAAAAA " << n->input.count('(') << endl; TODO
+////	n->input ==> all_inputs 	   make this conversion from set to vector
 	DFA_Builder* DFA = new DFA_Builder(n->NFATable, n->matchedExps, all_inputs);
 	cout << " Conversion Function " << endl;
 	DFA->NFA_to_DFA();
@@ -181,14 +173,14 @@ int main()
 	string lex;
 	cout << "Start tokens" << endl;
 	lex = sim->next_token().first;
-//	while (!lex.empty())
-//	{
+	while (!lex.empty())
+	{
 		cout << lex << endl;
-//		lex = sim->next_token().first;
-//	}
+		lex = sim->next_token().first;
+	}
 	cout << "End of tokens" << endl;
 
-	n->NFATable[18]->toString();
+//	n->NFATable[18]->toString();
 //	test_simulator();
 //	test_conc();
 //	test_DFA1();

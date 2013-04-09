@@ -42,10 +42,11 @@ private:
 	int state_id; // next state id
 	int statesNum; // number of NFA_states
 	bool* visited; // this array will help avoiding redundant
-	vector<vector<int> > DFA_states; // this table represents sub-states of each state
+	FA_State** NFA_states;
+	vector<vector<FA_State*> > DFA_states; // this table represents sub-states of each state
 	int flush_new_state();
-	void empty_closure(int state);
-	int find(const vector<int>& state,const vector<vector<int> > states);
+	void empty_closure(FA_State* state);
+	int find(const vector<FA_State*>& state,const vector<vector<FA_State*> > states);
 };
 
 #endif /* DFA_H_ */
