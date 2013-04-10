@@ -129,7 +129,12 @@ void NFA::create_NFA(string def, stack<char> OperatorStack1) {
 							input.insert(temp[1]);
 						}
 						//push to input set
-					}else {
+					}
+					 else if (temp[1] == '-') {
+										push_NFA(temp);
+
+
+									}else {
 						push_NFA(char(temp[0]));
 						input.insert(temp[0]);
 					}
