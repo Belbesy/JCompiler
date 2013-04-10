@@ -46,7 +46,7 @@ pair<string,int> Simulator::next_token()
 		state = next_state[0]->id; // always size = 1 ???
 	}
 //	cout <<  "State " << state << endl;
-	if (DFA[state]->acceptingState) // matched pattern
+	if (DFA[state]->acceptingState && i > 0) // matched pattern
 	{
 //		cout << " AC " << endl;
 		int pattern = DFA[state]->matched_pattern;
@@ -67,6 +67,7 @@ pair<string,int> Simulator::next_token()
 				sym_table_ptr = SYM_table.size() - 1;
 			}
 		}
+//		cout << matched_part << " ";
 		return make_pair(pattern_name , sym_table_ptr);
 	} else
 	{
@@ -75,8 +76,11 @@ pair<string,int> Simulator::next_token()
 			// reset of the token can't match anything till the whitespace
 			cout << "ERROR unmatched token " << token << endl;
 		else
+		{
+			cout << "ERROR unmatched token " << token << endl;
 		// this case happens if the first character can't accept so will remove the whole token
 			token = ERROR;
+		}
 		return make_pair("ERROR" , -1);
 	}
 }

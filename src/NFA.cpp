@@ -67,9 +67,14 @@ void NFA::createAll() {
 
 	pop(NFATable);
 //	if (!isDef) {
-		cout << "Accepted with id " << currID << endl;
-		NFATable[NFATable.size() - 1]->matched_pattern = currID;
-		NFATable[NFATable.size() - 1]->acceptingState = true;
+
+
+	// TODO I commented this block?!!!
+//		cout << "Accepted with id " << currID << endl;
+//		NFATable[NFATable.size() - 1]->matched_pattern = currID;
+//		NFATable[NFATable.size() - 1]->acceptingState = true;
+
+
 //	}
 	cout << "------------------------------" << endl;
 	cout << "Front State " << NFATable.front()->id << " End State "
@@ -87,6 +92,8 @@ void NFA::create_NFA(string def, stack<char> OperatorStack1) {
 	for (int i = 0; i < def.size(); ++i) {
 		bool isNormalOperator = true;
 		char curr = def[i];
+		if(curr == '\r') // TODO
+			continue;
 		/* if char is input*/
 		if (IsInput(curr)) {
 			temp += curr;
@@ -407,20 +414,49 @@ bool NFA::concat() {
  */
 bool NFA::plus() {
 	cout << "Plus" << endl;
-	/*get last operand*/
-	FSA_TABLE temp = OperandStack.top();
-	for (int var = 0; var < (int) temp.size(); ++var) {
-		temp[var]->id = state_id++;
-	}
-	OperandStack.push(temp);
-	/*make operand star*/
-	bool stardone = Star();
-	/*concat with star*/
-	bool concatdone = concat();
-	if (concatdone && stardone) {
+
+//	/*get last operand*/
+//	FSA_TABLE temp = OperandStack.top();
+//	for (int var = 0; var < (int) temp.size(); ++var) {
+//		temp[var]->id = state_id++;
+//	}
+//	OperandStack.push(temp);
+//	/*make operand star*/
+//	bool stardone = Star();
+//	/*concat with star*/
+//	bool concatdone = concat();
+//	if (concatdone && stardone) {
+//		return true;
+//	}
+//	return false;
+	FSA_TABLE table1;
+		/*Pop one Operand from operand stack*/
+		if (!pop(table1)) {
+
+			return false;
+		}
+		/*initialize start and end state*/
+		FA_State* stateStart = new FA_State(state_id++);
+		FA_State* endState = new FA_State(state_id++);
+		stateStart->matched_pattern = currID;
+		endState->matched_pattern = currID;
+
+	//add epsilon transition from start state to the first state of the operand
+		stateStart->AddTransition(EPSILON, table1[0]);
+
+	//add epsilon transition from end state of the operand to the end state
+		table1[table1.size() - 1]->AddTransition(EPSILON, endState);
+
+	//add epsilon transition from end state of the operand to start state of the operand
+		table1[table1.size() - 1]->AddTransition(EPSILON, table1[0]);
+
+		/*add start and end state*/
+		table1.push_back(endState);
+		table1.push_front(stateStart);
+
+		/*push operand to stack*/
+		OperandStack.push(table1);
 		return true;
-	}
-	return false;
 }
 /*Union:
  *  Evaluates the union operator '|'
@@ -487,6 +523,5 @@ bool NFA::IsRightParanthesis(char ch) {
 	return (ch == 41);
 }
 NFA::~NFA() {
-// TODO Auto-generated destructor stub
 }
 

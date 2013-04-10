@@ -13,6 +13,10 @@ DFA_Builder::DFA_Builder(FSA_TABLE NFATable_,vector<string> patterns_ ,vector<ch
 {
 	NFATable = NFATable_;
 	patterns = patterns_;
+//	cout << "Patterns " << endl;
+//	for(int i = 0; i < patterns.size();i++)
+//		cout << patterns[i] << endl;
+//	cout << " End of Patterns " << endl;
 	all_inputs = all_inputs_;
 	statesNum = NFATable.size();
 	visited = new bool[statesNum];
@@ -61,6 +65,7 @@ void DFA_Builder::NFA_to_DFA()
 	// start BFS
 	queue<int> q;
 	q.push(0);
+	set<int> enqueued_states;
 	int front , size , stateSize;
 	while(!q.empty())
 	{
@@ -75,17 +80,17 @@ void DFA_Builder::NFA_to_DFA()
 			char input = all_inputs[i];
 //			cout << " Apply input " << input << endl;
 			// apply this input to all state states
-			cout << " Front " << front << " " << input << " " << endl;
+//			cout << " Front " << front << " " << input << " " << endl;
 			for(int j = 0 ;j < stateSize;j++)
 			{
 				// apply this input to NFA state "state"
 				state = DFA_states[front][j];
-				cout << " Apply to state " << state->id << endl;
+//				cout << " Apply to state " << state->id << endl;
 				vector<FA_State*> result_states;
 				state->getTransition(input, result_states);
 				for (int k = 0; k < (int) result_states.size();k++)
 				{
-					cout << " Got sub-state " << result_states[k]->id << endl;
+//					cout << " Got sub-state " << result_states[k]->id << endl;
 					empty_closure(result_states[k]);
 				}
 			}
@@ -94,22 +99,25 @@ void DFA_Builder::NFA_to_DFA()
 			int added_state = flush_new_state();
 			if (added_state != -1)
 			{
-				if (added_state == state_id - 1 && added_state != front) // check whether it exists before or not
+				if (added_state == state_id - 1 && !enqueued_states.count(added_state)) // check whether it exists before or not
 				// new state,add it to your DFA states , and add to be queue to be explored later
+				{
 					q.push(added_state);
+					enqueued_states.insert(added_state);
+				}
 				DFA[front]->AddTransition(input, DFA[added_state]);
-				cout << "Edge from state " << char(front+'A') << " to " << char(added_state+'A') << " input " << input << endl;
+				cout << "Edge from state " << front << " to " << added_state << " input " << input << endl;
 			}
 		}
 		cout << " ------------- " << endl;
 	}
-//	for(int i = 0 ;  i < state_id;i++)
-//	{
-//		cout << "State " << i  << " ";
-//		for(int j = 0 ; j < (int)DFA_states[i].size();j++)
-//			cout << "(" <<DFA_states[i][j]->id << ", " <<  DFA_states[i][j]->acceptingState << ")" << " ";
-//		cout << endl;
-//	}
+	for(int i = 0 ;  i < state_id;i++)
+	{
+		cout << "State " << i  << " ";
+		for(int j = 0 ; j < (int)DFA_states[i].size();j++)
+			cout << "(" <<DFA_states[i][j]->id << ", " <<  DFA_states[i][j]->acceptingState  << "," << DFA_states[i][j]->matched_pattern << ")" << " ";
+		cout << endl;
+	}
 }
 
 /**
@@ -128,7 +136,7 @@ int DFA_Builder::flush_new_state()
 	for(int i = 0 ; i < statesNum;i++)
 		if(visited[i])
 		{
-			cout << NFA_states[i] << " " << NFA_states[i]->id << " " << i << endl;
+//			cout << NFA_states[i] << " " << NFA_states[i]->id << " " << i << endl;
 			sub_states.push_back(NFA_states[i]);
 			visited[i] = false;
 			if(NFA_states[i]->acceptingState)

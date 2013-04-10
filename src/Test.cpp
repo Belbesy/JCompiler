@@ -125,25 +125,15 @@ void test_DFA2()
 }
 int main()
 {
+	freopen("out.txt", "w", stdout); 					// TODO remove this line
+
+	cout << "Enter file name for lexical rules" << endl;
+	string file = "test";
+//	cin >> file; 										// TODO uncomment this line
+//	freopen("Transition_Table_log.txt", "w", stdout);  // TODO uncomment this line
 	FileReader *f = new FileReader();
 
-	f->readTheFile("test");
-//	vector<string> myv;
-//			myv.push_back("{boolean if}");
-//			myv.push_back("id: letter (letter|digit)*");
-//
-//			myv.push_back("num: digit+|digit+ . (\L|E digits)");
-//			myv.push_back("letters: letter*");
-//
-//			myv.push_back("letter = a-z|A-Z");
-//			myv.push_back("digit = 0-9");
-//
-//			myv.push_back("digits = digit+");
-//			myv.push_back("addop: \\+|-");
-//			myv.push_back("mulop: \\*|/");
-//			myv.push_back("[; , \\( \\) { }]");
-//			f->fileRead = myv;
-
+	f->readTheFile((char*)file.c_str());
 
 	f->initializeForNFA();
 
@@ -157,30 +147,37 @@ int main()
 	for (set<char>::iterator i = n->input.begin(); i != n->input.end(); i++)
 	{
 		all_inputs.push_back(*i);
-		cout << *i << endl;
+		cout << *i << " " << int(*i) << endl;
 	}
-//	cout << "AAAAAAAA " << n->input.count('0') << endl;
-//	cout << "AAAAAAAA " << n->input.count('(') << endl; TODO
-////	n->input ==> all_inputs 	   make this conversion from set to vector
+
 	DFA_Builder* DFA = new DFA_Builder(n->NFATable, n->matchedExps, all_inputs);
 	cout << " Conversion Function " << endl;
 	DFA->NFA_to_DFA();
 //	DFA->minimize_DFA();
-	cout << "  Start Simulator" << endl;
+
+
+
+
+
+//	cout << "Enter file name for source code" << endl; //TODO uncomment this line
+	string src_file = "src_file";
+	//	cin >> src_file; 							//TODO uncomment this line
+
+	cout << "  Start Simulator" << endl; 			// TODO remove this line
 	Simulator* sim = new Simulator(DFA->DFA, DFA->patterns);
-	sim->open_file("src_file");
-//
+	sim->open_file(src_file.c_str());
+
+//	freopen("LA_output.txt", "w", stdout); 			// TODO uncomment this line
 	string lex;
-	cout << "Start tokens" << endl;
+	cout << "Start tokens" << endl; 				// TODO remove this line
 	lex = sim->next_token().first;
 	while (!lex.empty())
 	{
 		cout << lex << endl;
 		lex = sim->next_token().first;
 	}
-	cout << "End of tokens" << endl;
+	cout << "End of tokens" << endl; // TODO remove this line
 
-//	n->NFATable[18]->toString();
 //	test_simulator();
 //	test_conc();
 //	test_DFA1();
