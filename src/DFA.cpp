@@ -238,5 +238,193 @@ DFA_Builder::~DFA_Builder()
 {
 }
 
+// =================================== Minimzation ==========================================
+
+// if Y is in W
+
+GROUP::iterator inside(SET a, GROUP g) {
+	foreach(b, g) {
+		if (b->size() != a.size())
+			continue;
+		bool match = true;
+		foreach(e, a)
+			if (b->find(*e) == b->end()) {
+				match = false;
+				break;
+			}
+		if (match)
+			return b;
+	}
+	return g.end();
+}
+
+// difference
+
+SET difference(SET Y, SET X) {
+	SET result;
+	vector<int> v(max(Y.size(), X.size()));
+	v.resize(set_difference(all(Y), all(X),v.begin())  - v.begin());
+	result.insert(v.begin(), v.end());
+	return result;
+}
+
+SET intersect(SET Y, SET X) {
+	SET result;
+	vector<int> v(max(Y.size(), X.size()));
+	v.resize(set_intersection(all(Y), all(X),v.begin())  - v.begin());
+	result.insert(v.begin(), v.end());
+	return result;
+}
+
+//	P := {F, Q \ F};
+//	W := {F};
+//	while (W is not empty) do
+//	     choose and remove a set A from W
+//	     for each c in ∑ do
+//	          let X be the set of states for which a transition on c leads to a state in A
+//	          for each set Y in P for which X ∩ Y is nonempty do
+//	               replace Y in P by the two sets X ∩ Y and Y \ X
+//	               if Y is in W
+//	                    replace Y in W by the same two sets
+//	               else
+//	                    if |X ∩ Y| <= |Y \ X|
+//	                         add X ∩ Y to W
+//	                    else
+//	                         add Y \ X to W
+//	          end;
+//	     end;
+//	end;
+
+
+FSA_TABLE minimize(FSA_TABLE fa) {
+
+	int** trans = new int *[fa.size()];
+
+	for (size_t i = 0; i < fa.size(); i++) {
+		trans[i] = new int[300];
+		for (int j = 0; j < 300; j++) {
+			trans[i][j] = -1;
+		}
+	}
+
+	// Preparing F, Q/F;
+	SET accepting, others;
+	map<int, FA_State *> old_states;
+
+	foreach(it, fa) {
+
+		old_states[(*it)->id] = (*it);
+		foreach(t, (*it)->transitions_to)
+			trans[(*it)->id][(int) (t->first)] = t->second->id;
+		if ((*it)->acceptingState)
+			accepting.insert((*it)->id);
+		else
+			others.insert((*it)->id);
+	}
+
+	//	P := {F, Q \ F};
+	GROUP P;
+	P.push_back(accepting);
+	P.push_back(others);
+
+	//	W := {F};
+	GROUP W;
+	W.push_back(accepting);
+
+	//	while (W is not empty) do
+	while (!W.empty()) {
+		//	choose and remove a set A from W
+		SET A = *W.begin();
+		W.erase(W.begin());
+		// for each c in ∑ do
+		for (int c = 0; c < 300; c++) {
+			SET X;
+
+			// let X be the set of states for which a transition on c leads to a state in A
+			for (size_t from_id = 0; from_id < fa.size(); from_id++)
+				if (A.find(trans[from_id][c]) != A.end())
+					X.insert(from_id);
+
+			// for each set Y in P
+			foreach(Y, P) {
+				SET intersec = intersect(*Y, X);
+				if (intersec.empty())
+					continue;
+				// for which X ∩ Y is nonempty do
+
+				SET diff = difference(*Y, X);
+				// replace Y in P by the two sets X ∩ Y and Y \ X
+				P.erase(Y);
+				P.push_back(intersec);
+				P.push_back(diff);
+
+				//if Y is in W
+				GROUP::iterator it = inside(*Y, W);
+				if (it != W.end()) {
+					//replace Y in W by the same two sets
+					W.erase(it);
+					W.push_back(intersec);
+					W.push_back(diff);
+				} else {
+					//	if |X ∩ Y| <= |Y \ X|
+					if (intersec.size() < diff.size()) {
+						//	add X ∩ Y to W
+						if (!intersec.empty())
+							W.push_back(intersec);
+					} else {
+						//	add Y \ X to W
+						if (!diff.empty())
+							W.push_back(diff);
+					}
+				}
+			}
+
+		}
+
+	}
+
+	FSA_TABLE new_dfa;
+
+	map<int, int> new_id;
+	for (size_t i = 0; i < P.size(); i++)
+		foreach(s, P[i])
+			new_id[*s] = i;
+
+	int** new_trans = new int *[P.size()];
+
+	for (size_t i = 0; i < P.size(); i++) {
+		new_trans[i] = new int[300];
+		for (int j = 0; j < 300; j++) {
+			new_trans[i][j] = -1;
+		}
+	}
+
+	for (size_t i = 0; i < P.size(); i++)
+		foreach(s, P[i])
+			foreach(t, old_states[*s]->transitions_to)
+				new_trans[*s][(int) (t)->first] = new_id[(t)->second->id];
+
+	vector<FA_State *> new_states;
+	for (size_t i = 0; i < P.size(); i++) {
+		FA_State* new_s = new FA_State(i);
+		new_s->acceptingState = old_states[*P[i].begin()]->acceptingState;
+		new_states.push_back(new_s);
+	}
+
+	for (size_t i = 0; i < P.size(); i++) {
+		for (int j = 0; j < 300; j++)
+			if (new_trans[i][j] > -1) {
+				new_states[i]->transitions_to.insert(make_pair(char(j), new_states[new_trans[i][j]]));
+				new_states[new_trans[i][j]]->transitions_from.insert(new_states[i]);
+			}
+
+	}
+
+	for (size_t i = 0; i < P.size(); i++) 
+		new_dfa.push_back(new_states[i]);
+	
+
+	return new_dfa;
+}
 
 
