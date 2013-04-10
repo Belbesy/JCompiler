@@ -111,13 +111,13 @@ void DFA_Builder::NFA_to_DFA()
 		}
 		cout << " ------------- " << endl;
 	}
-	for(int i = 0 ;  i < state_id;i++)
-	{
-		cout << "State " << i  << " ";
-		for(int j = 0 ; j < (int)DFA_states[i].size();j++)
-			cout << "(" <<DFA_states[i][j]->id << ", " <<  DFA_states[i][j]->acceptingState  << "," << DFA_states[i][j]->matched_pattern << ")" << " ";
-		cout << endl;
-	}
+//	for(int i = 0 ;  i < state_id;i++)
+//	{
+//		cout << "State " << i  << " ";
+//		for(int j = 0 ; j < (int)DFA_states[i].size();j++)
+//			cout << "(" <<DFA_states[i][j]->id << ", " <<  DFA_states[i][j]->acceptingState  << "," << DFA_states[i][j]->matched_pattern << ")" << " ";
+//		cout << endl;
+//	}
 }
 
 /**
@@ -296,8 +296,7 @@ SET intersect(SET Y, SET X) {
 //	end;
 
 
-FSA_TABLE minimize(FSA_TABLE fa) {
-
+vector<FA_State*> DFA_Builder::minimize(vector<FA_State*> fa) {
 	int** trans = new int *[fa.size()];
 
 	for (size_t i = 0; i < fa.size(); i++) {
@@ -383,7 +382,7 @@ FSA_TABLE minimize(FSA_TABLE fa) {
 
 	}
 
-	FSA_TABLE new_dfa;
+	vector<FA_State*> new_dfa;
 
 	map<int, int> new_id;
 	for (size_t i = 0; i < P.size(); i++)

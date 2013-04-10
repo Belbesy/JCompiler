@@ -55,7 +55,7 @@ pair<string,int> Simulator::next_token()
 		//  insert in symbol table ?!!!
 		string pattern_name = patterns[pattern];
 		int sym_table_ptr = -1;
-		if(pattern_name != matched_part) // not keyword nor punctuation mark
+		if(pattern_name != "punctuation" && pattern_name != "keyword") // not keyword nor punctuation mark
 		{
 			int size = SYM_table.size();
 			for(int i = 0; i < size;i++)
@@ -66,8 +66,10 @@ pair<string,int> Simulator::next_token()
 				SYM_table.push_back(make_pair(matched_part, pattern_name));
 				sym_table_ptr = SYM_table.size() - 1;
 			}
-		}
+		}else
+			pattern_name = matched_part;
 //		cout << matched_part << " ";
+
 		return make_pair(pattern_name , sym_table_ptr);
 	} else
 	{

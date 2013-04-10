@@ -45,7 +45,7 @@ public:
 
 	DFA_Builder(FSA_TABLE NFATable_,vector<string> expression_,vector<char> all_inputs_);
 	void NFA_to_DFA();
-	void minimize_DFA();
+	vector<FA_State*> minimize(vector<FA_State*> fa);
 	virtual ~DFA_Builder();
 
 private:

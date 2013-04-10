@@ -125,62 +125,39 @@ void test_DFA2()
 }
 int main()
 {
-	freopen("out.txt", "w", stdout); 					// TODO remove this line
-
 	cout << "Enter file name for lexical rules" << endl;
 	string file = "test";
-//	cin >> file; 										// TODO uncomment this line
-//	freopen("Transition_Table_log.txt", "w", stdout);  // TODO uncomment this line
+	cin >> file;
 	FileReader *f = new FileReader();
-
 	f->readTheFile((char*)file.c_str());
-
 	f->initializeForNFA();
-
 	NFA *n = new NFA(f->regularExpressions);
 	n->defs = f->defs;
 	n->matchedExps = f->expressionsID;
 	n->createAll();
-
 	cout << "  Start Conversion NFA to DFA " << endl;
 	vector<char> all_inputs;
 	for (set<char>::iterator i = n->input.begin(); i != n->input.end(); i++)
 	{
 		all_inputs.push_back(*i);
-		cout << *i << " " << int(*i) << endl;
 	}
-
 	DFA_Builder* DFA = new DFA_Builder(n->NFATable, n->matchedExps, all_inputs);
 	cout << " Conversion Function " << endl;
 	DFA->NFA_to_DFA();
-//	DFA->minimize_DFA();
-
-
-
-
-
-//	cout << "Enter file name for source code" << endl; //TODO uncomment this line
+	cout << "Enter file name for source code" << endl;
 	string src_file = "src_file";
-	//	cin >> src_file; 							//TODO uncomment this line
-
-	cout << "  Start Simulator" << endl; 			// TODO remove this line
+	cin >> src_file;
 	Simulator* sim = new Simulator(DFA->DFA, DFA->patterns);
 	sim->open_file(src_file.c_str());
 
-//	freopen("LA_output.txt", "w", stdout); 			// TODO uncomment this line
+	freopen("LA_output.txt", "w", stdout);
 	string lex;
-	cout << "Start tokens" << endl; 				// TODO remove this line
 	lex = sim->next_token().first;
 	while (!lex.empty())
 	{
 		cout << lex << endl;
 		lex = sim->next_token().first;
 	}
-	cout << "End of tokens" << endl; 					// TODO remove this line
-
-//	test_simulator();
-//	test_conc();
-//	test_DFA1();
-//	test_DFA2();
+	fclose (stdout);
 	return 0;
 }
