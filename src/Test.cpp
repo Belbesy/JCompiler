@@ -176,7 +176,7 @@ int main()
 		cout << lex << endl;
 		lex = sim->next_token().first;
 	}
-	cout << "End of tokens" << endl; // TODO remove this line
+	cout << "End of tokens" << endl; 					// TODO remove this line
 
 //	test_simulator();
 //	test_conc();

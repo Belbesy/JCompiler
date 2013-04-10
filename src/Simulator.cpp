@@ -72,15 +72,8 @@ pair<string,int> Simulator::next_token()
 	} else
 	{
 		// ERROR
-		if(i > 0)
-			// reset of the token can't match anything till the whitespace
-			cout << "ERROR unmatched token " << token << endl;
-		else
-		{
-			cout << "ERROR unmatched token " << token << endl;
-		// this case happens if the first character can't accept so will remove the whole token
-			token = ERROR;
-		}
+		cout << "ERROR unmatched token " << token << endl;
+		token = "";
 		return make_pair("ERROR" , -1);
 	}
 }
