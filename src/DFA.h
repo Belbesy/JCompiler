@@ -18,6 +18,16 @@ using namespace std;
 
 
 
+#define foreach(a, b) for(typeof((b).begin()) a = (b).begin(); a!=(b).end(); ++a)
+#define all(a) (a).begin(), (a).end()
+
+typedef set<int> SET;
+typedef vector<SET> GROUP;
+
+FSA_TABLE minimize(FSA_TABLE fa);
+GROUP::iterator inside(SET a, GROUP g);
+SET difference(SET Y, SET X);
+SET intersect(SET Y, SET X);
 
 
 class DFA_Builder {
