@@ -8,8 +8,10 @@
 #ifndef PARSERGENERATOR_H_
 #define PARSERGENERATOR_H_
 #include <map>
+#include <stack>
 #include "Production.h"
 #include "FirstEntry.h"
+#include "Simulator.h"
 
 using namespace std;
 const int EPSILON_TRANSITION = -1;
@@ -21,12 +23,14 @@ public:
 	// this map is used to get LHS production index in the productions vector (to avoid linear search while implementing first and follow sets)
 	map<string, int> LHS_index;
 	ParserGenerator(vector<Production> productions_,map<string, int> LHS_index_);
+	bool generateParser();
+	void SimuParser(Simulator* sim);
 	virtual ~ParserGenerator();
 private:
 	vector<vector<FirstEntry> > first;
 	vector<vector<FirstEntry> > follow;
 	// table[state][input]  =  indx > 0 (got to production [state][indx]) || ind == -1 (epsilon) || nothing = error
-	vector<map<string,int> > table;
+	vector<map<string,int> > parseTable;
 	bool constructTable();
 	bool addFollowSet(int nonTerminal);
 };
