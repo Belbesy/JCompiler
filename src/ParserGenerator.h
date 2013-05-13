@@ -20,7 +20,7 @@ public:
 	virtual ~ParserGenerator();
 private:
 	vector<vector<FirstEntry> > first;
-	vector<vector<Term> > follow;
+	vector<vector<FirstEntry> > follow;
 	vector<map<string,int> > table;
 	void constructTable();
 };

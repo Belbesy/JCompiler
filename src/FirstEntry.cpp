@@ -17,6 +17,5 @@ FirstEntry::FirstEntry(string terminal_,int production_)
 
 FirstEntry::~FirstEntry()
 {
-	// TODO Auto-generated destructor stub
 }
 
