@@ -7,8 +7,12 @@
 
 #ifndef PARSERGENERATOR_H_
 #define PARSERGENERATOR_H_
+#include <map>
+#include "Production.h"
+#include "FirstEntry.h"
 
-namespace std {
+using namespace std;
+const int EPSILON_TRANSITION = -1;
 
 class ParserGenerator {
 public:
@@ -21,9 +25,10 @@ public:
 private:
 	vector<vector<FirstEntry> > first;
 	vector<vector<FirstEntry> > follow;
+	// table[state][input]  =  indx > 0 (got to production [state][indx]) || ind == -1 (epsilon) || nothing = error
 	vector<map<string,int> > table;
-	void constructTable();
+	bool constructTable();
+	bool addFollowSet(int nonTerminal);
 };
 
-} /* namespace std */
 #endif /* PARSERGENERATOR_H_ */

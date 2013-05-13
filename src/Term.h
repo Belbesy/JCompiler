@@ -7,7 +7,7 @@
 
 #ifndef TERM_H_
 #define TERM_H_
-#include "string.h"
+#include <string>
 
 
 using namespace std;

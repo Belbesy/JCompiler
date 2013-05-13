@@ -29,7 +29,7 @@ public:
 	 *    LHS = "stmt"
 	 *    RHS = { {type , id} , {if , cond , then , stamt} , {while, cond, then, stmt, end}};
 	 */
-	vector<vector<Term>> RHS;
+	vector<vector<Term> > RHS;
 	Production(string LHS_);
 	// adds new possible RHS of LHS of the production
 	void addRHS(vector<Term> newRHS);

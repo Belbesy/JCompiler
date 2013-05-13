@@ -8,6 +8,8 @@
 #ifndef SYNTAXRULESPARSER_H_
 #define SYNTAXRULESPARSER_H_
 
+#include "Production.h"
+#include <map>
 using namespace std;
 
 class SyntaxRulesParser {

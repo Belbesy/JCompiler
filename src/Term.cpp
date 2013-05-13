@@ -9,7 +9,7 @@
 
 using namespace std;
 
-Term::Term(string name_, bool isTerminal_)
+Term::Term(string name_,bool isTerminal_)
 {
 	name= name_;
 	isTerminal = isTerminal_;

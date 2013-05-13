@@ -12,7 +12,7 @@ using namespace std;
 Production::Production(string LHS_)
 {
 	LHS = LHS_;
-	RHS = vector<vector<Term>>();
+	RHS = vector<vector<Term> >();
 }
 
 void Production::addRHS(vector<Term> newRHS)

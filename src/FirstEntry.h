@@ -7,6 +7,7 @@
 
 #ifndef FIRSTENTRY_H_
 #define FIRSTENTRY_H_
+#include <string>
 
 using namespace std;
 
