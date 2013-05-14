@@ -11,10 +11,13 @@
 #include <vector>
 #include "NFA.h"
 #include "Simulator.h"
+#include "Production.h"
+#include "ParserGenerator.h"
 #include "ConcatenationHandler.h"
 #include "DFA.h"
 #include <map>
 using namespace std;
+
 
 
 
@@ -123,41 +126,105 @@ void test_DFA2()
 	cout << " Conversion Function " << endl;
 	DFA->NFA_to_DFA();
 }
+
+
+void test_parser()
+{
+	vector<Production> prod;
+	vector<Term> v1 ,v2 , v3 , v4 , v5 , v6 , v7 , v8;
+
+	v1.push_back(Term("T" , false));
+	v1.push_back(Term("E_" , false));
+
+	v2.push_back(Term("+" , true));
+	v2.push_back(Term("T" , false));
+	v2.push_back(Term("E_" , false));
+
+	v3.push_back(Term("" , true));
+
+	v4.push_back(Term("F" , false));
+	v4.push_back(Term("T_" , false));
+
+	v5.push_back(Term("*" , true));
+	v5.push_back(Term("F" , false));
+	v5.push_back(Term("T_" , false));
+
+	v6.push_back(Term("" , true));
+
+	v7.push_back(Term("(" , true));
+	v7.push_back(Term("E" , false));
+	v7.push_back(Term(")" , true));
+
+	v8.push_back(Term("id" , true));
+
+	Production p1("E");
+	Production p2("E_");
+	Production p3("T");
+	Production p4("T_");
+	Production p5("F");
+	p1.addRHS(v1);
+	p2.addRHS(v2);
+	p2.addRHS(v3);
+	p3.addRHS(v4);
+	p4.addRHS(v5);
+	p4.addRHS(v6);
+	p5.addRHS(v7);
+	p5.addRHS(v8);
+
+	prod.push_back(p1);
+	prod.push_back(p2);
+	prod.push_back(p3);
+	prod.push_back(p4);
+	prod.push_back(p5);
+
+	map<string , int> ind;
+	ind["E"] = 0;
+	ind["E_"] = 1;
+	ind["T"] = 2;
+	ind["T_"] = 3;
+	ind["F"] = 4;
+
+	ParserGenerator* parser  = new ParserGenerator(prod , ind);
+	parser->generateParser();
+	parser->SimuParser(new SimulatorO());
+}
 int main()
 {
-	cout << "Enter file name for lexical rules" << endl;
-	string file = "test";
-	cin >> file;
-	FileReader *f = new FileReader();
-	f->readTheFile((char*)file.c_str());
-	f->initializeForNFA();
-	NFA *n = new NFA(f->regularExpressions);
-	n->defs = f->defs;
-	n->matchedExps = f->expressionsID;
-	n->createAll();
-	cout << "  Start Conversion NFA to DFA " << endl;
-	vector<char> all_inputs;
-	for (set<char>::iterator i = n->input.begin(); i != n->input.end(); i++)
-	{
-		all_inputs.push_back(*i);
-	}
-	DFA_Builder* DFA = new DFA_Builder(n->NFATable, n->matchedExps, all_inputs);
-	cout << " Conversion Function " << endl;
-	DFA->NFA_to_DFA();
-	cout << "Enter file name for source code" << endl;
-	string src_file = "src_file";
-	cin >> src_file;
-	Simulator* sim = new Simulator(DFA->DFA, DFA->patterns);
-	sim->open_file(src_file.c_str());
+//	cout << "Enter file name for lexical rules" << endl;
+//	string file = "test";
+//	cin >> file;
+//	FileReader *f = new FileReader();
+//	f->readTheFile((char*)file.c_str());
+//	f->initializeForNFA();
+//	NFA *n = new NFA(f->regularExpressions);
+//	n->defs = f->defs;
+//	n->matchedExps = f->expressionsID;
+//	n->createAll();
+//	cout << "  Start Conversion NFA to DFA " << endl;
+//	vector<char> all_inputs;
+//	for (set<char>::iterator i = n->input.begin(); i != n->input.end(); i++)
+//	{
+//		all_inputs.push_back(*i);
+//	}
+//	DFA_Builder* DFA = new DFA_Builder(n->NFATable, n->matchedExps, all_inputs);
+//	cout << " Conversion Function " << endl;
+//	DFA->NFA_to_DFA();
+//	cout << "Enter file name for source code" << endl;
+//	string src_file = "src_file";
+//	cin >> src_file;
+//	Simulator* sim = new Simulator(DFA->DFA, DFA->patterns);
+//	sim->open_file(src_file.c_str());
+//
+//	freopen("LA_output.txt", "w", stdout);
+//	string lex;
+//	lex = sim->next_token().first;
+//	while (!lex.empty())
+//	{
+//		cout << lex << endl;
+//		lex = sim->next_token().first;
+//	}
+//	fclose (stdout);
 
-	freopen("LA_output.txt", "w", stdout);
-	string lex;
-	lex = sim->next_token().first;
-	while (!lex.empty())
-	{
-		cout << lex << endl;
-		lex = sim->next_token().first;
-	}
-	fclose (stdout);
+	test_parser();
 	return 0;
 }

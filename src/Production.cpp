@@ -9,6 +9,9 @@
 
 using namespace std;
 
+Production::Production(){
+
+}
 Production::Production(string LHS_)
 {
 	LHS = LHS_;

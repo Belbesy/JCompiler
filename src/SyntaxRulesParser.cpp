@@ -22,7 +22,7 @@ void SyntaxRulesParser::parse(const char* fileName)
 	productions.clear();
 	LHS_index.clear();
 	// read file and get productions
-	printf("Not Implemented yet\n");
+
 }
 
 SyntaxRulesParser::~SyntaxRulesParser()
