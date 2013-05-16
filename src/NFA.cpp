@@ -24,10 +24,10 @@ NFA::NFA(vector<StringPair> expr) {
 }
 /*create all definitions*/
 void NFA::createNFADefs() {
-	for (int var = 0; var < defs.size(); ++var) {
+	for (int var = 0; var < (int)defs.size(); ++var) {
 
 		defsNFA.insert(make_pair(defs[var].id, defs[var].definition));
-		cout << defs[var].id << " " << defs[var].definition << endl;
+//		cout << defs[var].id << " " << defs[var].definition << endl;
 	}
 
 }
@@ -43,7 +43,7 @@ void NFA::createAll() {
 		string matched = expressions[var].id;
 		for (int i = 0; i < (int) matchedExps.size(); ++i) {
 			string currExp = matchedExps[i];
-			cout << matched << "    " << currExp<<endl;
+//			cout << matched << "    " << currExp<<endl;
 			if (matchedExps[i] == expressions[var].id) {
 				currID = i;
 				break;
@@ -52,7 +52,7 @@ void NFA::createAll() {
 		create_NFA(expressions[var].definition, OperatorStack);
 		pop(NFATable);
 //		if (!isDef) {
-			cout << "Accepted with id " << currID << endl;
+//			cout << "Accepted with id " << currID << endl;
 			NFATable[NFATable.size() - 1]->matched_pattern = currID;
 			NFATable[NFATable.size() - 1]->acceptingState = true;
 //		}
@@ -76,20 +76,20 @@ void NFA::createAll() {
 
 
 //	}
-	cout << "------------------------------" << endl;
-	cout << "Front State " << NFATable.front()->id << " End State "
-			<< NFATable.back()->id << endl;
+//	cout << "------------------------------" << endl;
+//	cout << "Front State " << NFATable.front()->id << " End State "
+//			<< NFATable.back()->id << endl;
 
-	for (int var = 0; var < (int) NFATable.size(); ++var) {
-		NFATable[var]->toString();
-	}
+//	for (int var = 0; var < (int) NFATable.size(); ++var) {
+//		NFATable[var]->toString();
+//	}
 }
 /*create_NFA:
  * Creates Nondeterministic Finite Automata from a Regular Expression
  * */
 void NFA::create_NFA(string def, stack<char> OperatorStack1) {
 	string temp = "";
-	for (int i = 0; i < def.size(); ++i) {
+	for (int i = 0; i < (int)def.size(); ++i) {
 		bool isNormalOperator = true;
 		char curr = def[i];
 		if(curr == '\r') // TODO
@@ -108,7 +108,6 @@ void NFA::create_NFA(string def, stack<char> OperatorStack1) {
 						temp = "";
 						temp += curr;
 					} else if (temp[0] == '\\') {
-						cout << "anaaaa" << temp << endl;
 						/*remove \\ from string*/
 						temp = temp.substr(1, temp.size() - 1);
 					}
@@ -170,7 +169,7 @@ void NFA::create_NFA(string def, stack<char> OperatorStack1) {
 		}
 
 	}
-	cout << temp << endl;
+//	cout << temp << endl;
 	if (temp != "") {
 		string defin = defsNFA[temp];
 		if (defin.size() != 0) {
@@ -205,7 +204,7 @@ void NFA::create_NFA(string def, stack<char> OperatorStack1) {
 		}
 	}
 	while (!OperatorStack1.empty()) {
-		cout << OperatorStack1.size() << endl;
+//		cout << OperatorStack1.size() << endl;
 
 		evaluate(OperatorStack1);
 		OperatorStack1.pop();
@@ -357,7 +356,7 @@ bool NFA::pop(FSA_TABLE& NFATable) {
  *  on the operand stack again.
  */
 bool NFA::Star() {
-	cout << "Star " << endl;
+//	cout << "Star " << endl;
 	FSA_TABLE table1;
 	/*Pop one Operand from operand stack*/
 	if (!pop(table1)) {
@@ -396,7 +395,7 @@ bool NFA::Star() {
  * the result back on the stack.
  */
 bool NFA::concat() {
-	cout << "Concat" << endl;
+//	cout << "Concat" << endl;
 	FSA_TABLE A, B;
 	/*pop last two operands*/
 	if (!pop(B) || !pop(A)) {
@@ -418,7 +417,7 @@ bool NFA::concat() {
  *  on the operand stack again.
  */
 bool NFA::plus() {
-	cout << "Plus" << endl;
+//	cout << "Plus" << endl;
 
 //	/*get last operand*/
 //	FSA_TABLE temp = OperandStack.top();
@@ -470,7 +469,7 @@ bool NFA::plus() {
  *  operand stack.
  */
 bool NFA::Union() {
-	cout << "Union" << endl;
+//	cout << "Union" << endl;
 	/*Pop two operands from operand Stack*/
 	FSA_TABLE A, B;
 	if (!pop(B) || !pop(A)) {

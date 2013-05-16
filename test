@@ -1,3 +1,11 @@
-{boolean if}
+{boolean while int if else}
+id: letter (letter|digit)*
+num: digit+
+letter = a-z|A-Z
 digit = 0-9
 digits = digit+
+addop: \+|-
+mulop: \*|/
+assign: =
+relop: \= \=|! \=|>|> \=|<|< \=
+[; , \( \) { }]

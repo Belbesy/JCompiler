@@ -29,14 +29,14 @@ void trim(string& s) {
 
 void SyntaxRulesParser::addToLHS(string lhs, vector<Term> terms) {
 
-	Production* production;
+//	Production* production;
 	if (LHS_index.count(lhs) > 0) { // LHS already exists in the map
-		int index = LHS_index.at(lhs);
-		production = productions.at(index);
-		production->addRHS(terms);
+		int index = LHS_index[lhs];
+//		production = productions.at(index);
+		productions[index].addRHS(terms);
 	} else { // first time to appear in the grammar
-		production = new Production(lhs);
-		production->addRHS(terms);
+		Production production = Production(lhs);
+		production.addRHS(terms);
 		productions.push_back(production);
 		LHS_index.insert(pair<string, int>(lhs, productions.size() - 1));
 	}
@@ -76,7 +76,7 @@ void SyntaxRulesParser::checkRHS(string line) {
 			} else { // one term
 				vector<Term> vec;
 				bool isTerminal = ifTerminal(item);
-				if (isTerminal && line.find("\\L") == string::npos)
+				if (isTerminal)
 					item = item.substr(1, item.length() - 2);
 				vec.push_back(Term(item, isTerminal));
 				addToLHS(currentLHS, vec);
@@ -90,7 +90,7 @@ void SyntaxRulesParser::checkRHS(string line) {
 		} else { // one term
 			vector<Term> vec;
 			bool isTerminal = ifTerminal(line);
-			if (isTerminal && line.find("\\L") == string::npos)
+			if (isTerminal)
 				line = line.substr(1, line.length() - 2);
 			vec.push_back(Term(line, isTerminal));
 			// term added to a lhs found using map

@@ -26,14 +26,8 @@ public:
 	// this map is used to get LHS production index in the productions vector (to avoid linear search while implementing first and follow sets)
 	map<string, int> LHS_index;
 	ParserGenerator(vector<Production> productions_,map<string, int> LHS_index_);
-	vector<FirstEntry> find_first(int);
-	vector<FirstEntry> find_follow_before(int);
-	vector<FirstEntry> find_follow_after(int);
-
-		void initFirst();
-	void initFollow();
 	bool generateParser();
-	void SimuParser(SimulatorO* sim);
+	void SimuParser(Simulator* sim);
 	virtual ~ParserGenerator();
 private:
 	vector<vector<FirstEntry> > first;
@@ -41,6 +35,11 @@ private:
 	// table[state][input]  =  indx > 0 (got to production [state][indx]) || ind == -1 (epsilon) || nothing = error
 	vector<map<string,int> > parseTable;
 	bool constructTable();
+	vector<FirstEntry> find_first(int);
+	vector<FirstEntry> find_follow_before(int);
+	vector<FirstEntry> find_follow_after(int);
+	void initFirst();
+	void initFollow();
 	bool addFollowSet(int nonTerminal);
 };
 

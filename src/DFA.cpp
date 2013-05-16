@@ -61,7 +61,7 @@ void DFA_Builder::NFA_to_DFA()
 	flush_new_state();
 
 
-	cout << "Start BFS" << endl;
+//	cout << "Start BFS" << endl;
 	// start BFS
 	queue<int> q;
 	q.push(0);
@@ -71,7 +71,7 @@ void DFA_Builder::NFA_to_DFA()
 	{
 		front = q.front();
 		q.pop();
-		cout << "State " << front << endl;
+//		cout << "State " << front << endl;
 
 		stateSize = (int)DFA_states[front].size();
 		size = all_inputs.size(); // get this array somehow
@@ -106,10 +106,10 @@ void DFA_Builder::NFA_to_DFA()
 					enqueued_states.insert(added_state);
 				}
 				DFA[front]->AddTransition(input, DFA[added_state]);
-				cout << "Edge from state " << front << " to " << added_state << " input " << input << endl;
+//				cout << "Edge from state " << front << " to " << added_state << " input " << input << endl;
 			}
 		}
-		cout << " ------------- " << endl;
+//		cout << " ------------- " << endl;
 	}
 //	for(int i = 0 ;  i < state_id;i++)
 //	{
@@ -140,12 +140,14 @@ int DFA_Builder::flush_new_state()
 			sub_states.push_back(NFA_states[i]);
 			visited[i] = false;
 			if(NFA_states[i]->acceptingState)
+			{
 				if(matched_pattern == -1)
 					// first time to get final state
 					matched_pattern = NFA_states[i]->matched_pattern;
 				else
 					// get highest priority one
 					matched_pattern = min(NFA_states[i]->matched_pattern , matched_pattern);
+			}
 		}
 	if(sub_states.size() == 0)
 		return -1;
