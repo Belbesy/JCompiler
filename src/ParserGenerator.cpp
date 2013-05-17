@@ -52,30 +52,30 @@ bool ParserGenerator::generateParser() {
  */
 void printf_left_derivation(vector<string>& left_derivation) {
 	int size = (int) left_derivation.size();
-	for (int i = 0; i  < size; i++)
+	for (int i = 0; i < size; i++)
 		printf("%s ", left_derivation[i].c_str());
 	cout << endl;
 }
 /**
  * method to print content of a vector
  */
-void replace_left_most_nonTerminal(vector<string>& left_derivation, string tof ,vector<Term>& prod) {
+void replace_left_most_nonTerminal(vector<string>& left_derivation, string tof,
+		vector<Term>& prod) {
 	size_t i;
-	for(i = 0; i < left_derivation.size();i++)
-		if(left_derivation[i] == tof)
+	for (i = 0; i < left_derivation.size(); i++)
+		if (left_derivation[i] == tof)
 			break;
 	stack<string> left_d_stack;
-	size_t ptr= left_derivation.size()-1;
+	size_t ptr = left_derivation.size() - 1;
 	string left_most = left_derivation.back();
 	left_derivation.pop_back();
-	while (ptr > i)
-	{
+	while (ptr > i) {
 		left_d_stack.push(left_most);
 		left_most = left_derivation.back();
 		left_derivation.pop_back();
 		ptr--;
 	}
-	for(i = 0; i < prod.size();i++)
+	for (i = 0; i < prod.size(); i++)
 		left_derivation.push_back(prod[i].name);
 	while (!left_d_stack.empty()) {
 		left_derivation.push_back(left_d_stack.top());
@@ -106,8 +106,7 @@ void ParserGenerator::SimuParser(Simulator* sim) {
 		printf_left_derivation(left_derivation); // print handling
 		Term tof = parseStack.top();
 		parseStack.pop();
-		if (!tof.isTerminal)
-		{
+		if (!tof.isTerminal) {
 			// top of stack is non terminal symbol
 			int index = LHS_index[tof.name];
 			if (parseTable[index].count(lex)) // check whether table cell is empty or not
@@ -115,8 +114,7 @@ void ParserGenerator::SimuParser(Simulator* sim) {
 				// apply input to non terminal
 				// get which production to use
 				int prodIndex = parseTable[index][lex];
-				if (prodIndex != EPSILON_TRANSITION)
-				{
+				if (prodIndex != EPSILON_TRANSITION) {
 					// get top of stack production index
 					int tofProduction = LHS_index[tof.name];
 					// get resulting production
@@ -126,20 +124,21 @@ void ParserGenerator::SimuParser(Simulator* sim) {
 					for (int i = (int) prod.size() - 1; i >= 0; i--)
 						parseStack.push(prod[i]);
 					// print handling
-					if(!tof.isTerminal)
-						replace_left_most_nonTerminal(left_derivation, tof.name , prod); // print handling
-				}else
-				{
+					if (!tof.isTerminal)
+						replace_left_most_nonTerminal(left_derivation,
+								tof.name, prod); // print handling
+				} else {
 					vector<Term> prod;
-					replace_left_most_nonTerminal(left_derivation, tof.name , prod);
+					replace_left_most_nonTerminal(left_derivation, tof.name,
+							prod);
 				}
 			} else {
 				// error . not valid input
 				printf("ERRRRRROOORRR\n");
-				 // search for the first synchronization symbol
-				while(!contains(follow[index] , lex) && !lex.empty()) // error panic mode , follow heuristic
+				// search for the first synchronization symbol
+				while (!contains(follow[index], lex) && !lex.empty()) // error panic mode , follow heuristic
 				{
-					printf("unmatched input%s , discard input\n" , lex.c_str());
+					printf("unmatched input%s , discard input\n", lex.c_str());
 					lex = sim->next_token().first;
 					if (lex.empty()) // add end of input symbol to the end of the stream
 					{
@@ -152,7 +151,7 @@ void ParserGenerator::SimuParser(Simulator* sim) {
 			// top of stack is terminal symbol
 			if (lex == tof.name) {
 				lex = sim->next_token().first;
-//				cout << "TOKEN TOKEN :" << lex << endl;
+				//				cout << "TOKEN TOKEN :" << lex << endl;
 				if (lex.empty()) // add end of input symbol to the end of the stream
 				{
 					lex = end_of_input;
@@ -160,7 +159,7 @@ void ParserGenerator::SimuParser(Simulator* sim) {
 				}
 			} else {
 				// error . not valid input
-				printf("Error missing token %s \n" , tof.name.c_str());
+				printf("Error missing token %s \n", tof.name.c_str());
 			}
 		}
 	}
@@ -185,9 +184,11 @@ bool ParserGenerator::constructTable() {
 			if (entry.terminal.size() > 0) {
 				if (parseTable[i].count(entry.terminal) == 0)
 					parseTable[i][entry.terminal] = entry.production;
-				else
-				{
-					cout << "Input " << entry.terminal <<  " with 2 productions state " << i << " , " << parseTable[i][entry.terminal] <<" and " << entry.production << endl;
+				else {
+					cout << "Input " << entry.terminal
+							<< " with 2 productions state " << i << " , "
+							<< parseTable[i][entry.terminal] << " and "
+							<< entry.production << endl;
 					return false; /// not LL(1) grammar
 				}
 			} else
@@ -201,22 +202,22 @@ bool ParserGenerator::constructTable() {
 	set<string> terminals;
 
 	terminals.insert("$");
-//	// print table
-//	printf("                 <<<<<<<<<<<<<< Productions >>>>>>>>>>>>>>>> \n");
-//	for (size_t i = 0; i < productions.size(); i++) {
-//		printf("%s -> ", productions[i].LHS.c_str());
-//		for (size_t j = 0; j < productions[i].RHS.size(); j++) {
-//			for (size_t k = 0; k < productions[i].RHS[j].size(); k++) {
-//				if (productions[i].RHS[j][k].isTerminal
-//						&& productions[i].RHS[j][k].name != "")
-//					terminals.insert(productions[i].RHS[j][k].name);
-//				printf("%s ", productions[i].RHS[j][k].name.c_str());
-//			}
-//			if(j < productions[i].RHS.size()-1)
-//				printf("|");
-//		}
-//		printf("\n");
-//	}
+	// print table
+	printf("                 <<<<<<<<<<<<<< Productions >>>>>>>>>>>>>>>> \n");
+	for (size_t i = 0; i < productions.size(); i++) {
+		printf("%s -> ", productions[i].LHS.c_str());
+		for (size_t j = 0; j < productions[i].RHS.size(); j++) {
+			for (size_t k = 0; k < productions[i].RHS[j].size(); k++) {
+				if (productions[i].RHS[j][k].isTerminal
+						&& productions[i].RHS[j][k].name != "")
+					terminals.insert(productions[i].RHS[j][k].name);
+				printf("%s ", productions[i].RHS[j][k].name.c_str());
+			}
+			if (j < productions[i].RHS.size() - 1)
+				printf("|");
+		}
+		printf("\n");
+	}
 	printf("                <<<<<<<<<<<<<< Parse Table >>>>>>>>>>>>>>>> \n");
 	for (size_t j = 0; j < parseTable.size(); j++) {
 		printf("%s -> ", productions[j].LHS.c_str());
@@ -248,9 +249,11 @@ bool ParserGenerator::addFollowSet(int nonTerminal) {
 		FirstEntry entry = follow[nonTerminal][j];
 		if (parseTable[nonTerminal].count(entry.terminal) == 0)
 			parseTable[nonTerminal][entry.terminal] = EPSILON_TRANSITION;
-		else
-		{
-			cout << "Input " << entry.terminal <<  " with 2 productions state " << nonTerminal << " , " << parseTable[nonTerminal][entry.terminal] <<" and  Epsilon" << endl;
+		else {
+			cout << "Input " << entry.terminal << " with 2 productions state "
+					<< nonTerminal << " , "
+					<< parseTable[nonTerminal][entry.terminal]
+					<< " and  Epsilon" << endl;
 			return false; // not LL(1) grammar
 		}
 	}
@@ -283,8 +286,7 @@ vector<FirstEntry> ParserGenerator::find_first(int p) {
 			} else {
 				int index = this->LHS_index[term.name];
 				vector<FirstEntry> child_firsts;
-				if (index != p)
-				{
+				if (index != p) {
 					child_firsts = find_first(index);
 					bool has_epsilon = false;
 					for (size_t k = 0; k < child_firsts.size(); k++) {
@@ -311,7 +313,6 @@ vector<FirstEntry> ParserGenerator::find_first(int p) {
 	this->first[p] = ans;
 	return ans;
 }
-
 
 vector<FirstEntry> ParserGenerator::find_follow_after(int s) {
 	string name = productions[s].LHS;
@@ -362,22 +363,34 @@ vector<FirstEntry> ParserGenerator::find_follow_before(int s) {
 
 			for (size_t t = 0; t < terms.size() - 1; t++) {
 				Term term = terms[t];
-				if (term.name == name) {
-					Term next = terms[t + 1];
-					if (next.isTerminal) { //TODO: check for  epislon
-						if (!contains(sfollow, next.name))
-							sfollow.push_back(FirstEntry(next.name, s));
-					} else {
-						vector<FirstEntry> nextFirst =
-								first[LHS_index[next.name]];
+				if (term.name == name)
+				{
+					size_t nxTerm = t+1;
+					Term next = terms[nxTerm];
+					bool hasEpsilon;
+					do {
+						hasEpsilon = false;
+						next = terms[nxTerm];
+						if (next.isTerminal) {
+							if (!contains(sfollow, next.name))
+								sfollow.push_back(FirstEntry(next.name, s));
+						} else {
+							vector<FirstEntry> nextFirst =
+									first[LHS_index[next.name]];
 
-						for (size_t nf = 0; nf < nextFirst.size(); nf++) {
-							FirstEntry fe = nextFirst[nf];
-							if (fe.terminal != "")
-								if (!contains(sfollow, fe.terminal))
-									sfollow.push_back(fe);
+							for (size_t nf = 0; nf < nextFirst.size(); nf++)
+							{
+								FirstEntry fe = nextFirst[nf];
+								if (fe.terminal != "")
+								{
+									if (!contains(sfollow, fe.terminal))
+										sfollow.push_back(fe);
+								}else
+									hasEpsilon = true;
+							}
 						}
-					}
+						nxTerm++;
+					} while (nxTerm < terms.size() && hasEpsilon);// check for  epsilon
 				}
 			}
 
@@ -431,10 +444,10 @@ void ParserGenerator::initFollow() {
 	}
 	// top sort end
 
-//	for (size_t s = 0; s < productions.size(); s++) {
-//		printf(" %s ", productions[topoList[s]].LHS.c_str());
-//	}
-//	puts("");
+	//	for (size_t s = 0; s < productions.size(); s++) {
+	//		printf(" %s ", productions[topoList[s]].LHS.c_str());
+	//	}
+	//	puts("");
 
 	for (size_t s = 0; s < productions.size(); s++) {
 		this->follow[topoList[s]] = find_follow_before(topoList[s]);
