@@ -210,7 +210,7 @@ void test_parser_parseFile() {
 int main() {
 	cout << "Enter file name for lexical rules" << endl;
 	string file = "test";
-	//	cin >> file;
+	cin >> file;
 	FileReader *f = new FileReader();
 	f->readTheFile((char*) file.c_str());
 	f->initializeForNFA();
@@ -229,7 +229,7 @@ int main() {
 
 	cout << "Enter file name for syntax rules" << endl;
 	string syntax_file = "syntax_test.txt";
-	//	cin >> src_file;
+	cin >> syntax_file;
 	// read syntax rules file and generate productions
 	SyntaxRulesParser* syntaxParser = new SyntaxRulesParser();
 	syntaxParser->parse(syntax_file.c_str());
@@ -240,8 +240,7 @@ int main() {
 			printf("%s -> ", prod.LHS.c_str());
 			for (size_t j = 0; j < prod.RHS.size(); j++) {
 				for (size_t k = 0; k < prod.RHS[j].size(); k++)
-					printf("(%s , %d)", prod.RHS[j][k].name.c_str(),
-							prod.RHS[j][k].isTerminal);
+					printf("%s ", prod.RHS[j][k].name.c_str());
 				puts("");
 				if (j < prod.RHS.size() - 1)
 					printf("     |");
@@ -260,7 +259,7 @@ int main() {
 	// read program source file
 	cout << "Enter file name for source code" << endl;
 	string src_file = "src_file";
-	//	cin >> src_file;
+	cin >> src_file;
 	Simulator* sim = new Simulator(DFA->DFA, DFA->patterns);
 	sim->open_file(src_file.c_str());
 

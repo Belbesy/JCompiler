@@ -82,7 +82,12 @@ void replace_left_most_nonTerminal(vector<string>& left_derivation, string tof ,
 		left_d_stack.pop();
 	}
 }
-
+bool contains(vector<FirstEntry> p, string s) {
+	for (size_t i = 0; i < p.size(); i++)
+		if (p[i].terminal == s)
+			return true;
+	return false;
+}
 /**
  * this method parses (Syntax analysis) tokens that come from simulator (LA)
  */
@@ -129,8 +134,19 @@ void ParserGenerator::SimuParser(Simulator* sim) {
 					replace_left_most_nonTerminal(left_derivation, tof.name , prod);
 				}
 			} else {
-				// error . not valid input TODO
-				printf("ERRRRRROOORRR\n"); // synchronization
+				// error . not valid input
+				printf("ERRRRRROOORRR\n");
+				 // search for the first synchronization symbol
+				while(!contains(follow[index] , lex) && !lex.empty()) // error panic mode , follow heuristic
+				{
+					printf("unmatched input%s , discard input\n" , lex.c_str());
+					lex = sim->next_token().first;
+					if (lex.empty()) // add end of input symbol to the end of the stream
+					{
+						lex = end_of_input;
+						end_of_input = ""; // to match it only once
+					}
+				}
 			}
 		} else {
 			// top of stack is terminal symbol
@@ -185,22 +201,23 @@ bool ParserGenerator::constructTable() {
 	set<string> terminals;
 
 	terminals.insert("$");
-	// print table
-	printf("Productions\n");
-	for (size_t i = 0; i < productions.size(); i++) {
-		printf("%s -> ", productions[i].LHS.c_str());
-		for (size_t j = 0; j < productions[i].RHS.size(); j++) {
-			for (size_t k = 0; k < productions[i].RHS[j].size(); k++) {
-				if (productions[i].RHS[j][k].isTerminal
-						&& productions[i].RHS[j][k].name != "")
-					terminals.insert(productions[i].RHS[j][k].name);
-				printf("%s ", productions[i].RHS[j][k].name.c_str());
-			}
-			if(j < productions[i].RHS.size()-1)
-				printf("|");
-		}
-		printf("\n");
-	}
+//	// print table
+//	printf("                 <<<<<<<<<<<<<< Productions >>>>>>>>>>>>>>>> \n");
+//	for (size_t i = 0; i < productions.size(); i++) {
+//		printf("%s -> ", productions[i].LHS.c_str());
+//		for (size_t j = 0; j < productions[i].RHS.size(); j++) {
+//			for (size_t k = 0; k < productions[i].RHS[j].size(); k++) {
+//				if (productions[i].RHS[j][k].isTerminal
+//						&& productions[i].RHS[j][k].name != "")
+//					terminals.insert(productions[i].RHS[j][k].name);
+//				printf("%s ", productions[i].RHS[j][k].name.c_str());
+//			}
+//			if(j < productions[i].RHS.size()-1)
+//				printf("|");
+//		}
+//		printf("\n");
+//	}
+	printf("                <<<<<<<<<<<<<< Parse Table >>>>>>>>>>>>>>>> \n");
 	for (size_t j = 0; j < parseTable.size(); j++) {
 		printf("%s -> ", productions[j].LHS.c_str());
 		for (set<string>::iterator i = terminals.begin(); i != terminals.end(); i++) {
@@ -294,12 +311,7 @@ vector<FirstEntry> ParserGenerator::find_first(int p) {
 	this->first[p] = ans;
 	return ans;
 }
-bool contains(vector<FirstEntry> p, string s) {
-	for (size_t i = 0; i < p.size(); i++)
-		if (p[i].terminal == s)
-			return true;
-	return false;
-}
+
 
 vector<FirstEntry> ParserGenerator::find_follow_after(int s) {
 	string name = productions[s].LHS;
